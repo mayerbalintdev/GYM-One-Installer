@@ -1,0 +1,20 @@
+{
+    "installerVersion": "Telepítő verzió",
+    "phpVersion": "PHP verzió",
+    "extension": "kiterjesztés",
+    "requirementsCheck": "Rendszerkövetelmények Ellenőrzése",
+    "continue": "Folytatás",
+    "lang_select": "Válasszon nyelvet:",
+    "copyright": "Minden jog fenntartva",
+
+    "tos-header": "Használati feltételek",
+    "tos-btn": "A bepipálással elfogadom a",
+    "tos-checkbox": "GYM One Használati feltételeit",
+
+    "database-header": "Adatbázis Kapcsolódás",
+    "username": "Felhasználó:",
+    "password": "Jelszó:",
+    "database-host": "Adatbázis Host:",
+    "dbname": "Adatbázis:"
+
+}

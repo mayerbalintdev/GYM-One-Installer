@@ -1,0 +1,10 @@
+{
+    "installerVersion": "Installer Version",
+    "phpVersion": "PHP Version",
+    "extension": "Extension",
+    "requirementsCheck": "System Requirements Check",
+    "continue": "Continue",
+    "lang_select": "Please select the language:",
+    "copyright": "All rights reserved"
+
+}
