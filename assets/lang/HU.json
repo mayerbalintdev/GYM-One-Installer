@@ -1,4 +1,6 @@
 {
+    "welcome" : "Üdvözöllek",
+    "install": "Telepítés",
     "installerVersion": "Telepítő verzió",
     "phpVersion": "PHP verzió",
     "extension": "kiterjesztés",
