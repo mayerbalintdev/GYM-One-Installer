@@ -7,13 +7,24 @@ body {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#0950dc", endColorstr="#096ed2", GradientType=1);
     color: #fff !important;
 }
-h1 {
+#animated-text {
     transition: opacity 1s;
     opacity: 0;
     font-size: 70px;
     font-weight: 700;
 }
 
+h1{
+    font-size: 70px;
+    font-weight: 700;
+}
+
 .footer{
     background-color: #252525;
+}
+
+.svg,.bi{
+    height: 1em;
+    width: 1em;
+    vertical-align: -0.125em;
 }
