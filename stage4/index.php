@@ -1,11 +1,10 @@
 <?php
-session_start(); // Session kezdése vagy folytatása
+session_start();
 
 // DEF INFO
 $github_url = "https://github.com/mayerbalintdev/";
-$discord_url = "";
-$twitter_url = "";
-$installer_version = "Beta 0.1";
+$discord_url = "https://gymoneglobal.com/discord";
+$installer_version = "V1.0.0";
 
 $langDir = __DIR__ . "/../assets/lang/";
 $langFiles = glob($langDir . "*.json");
@@ -16,13 +15,11 @@ foreach ($langFiles as $file) {
     $languages[$code] = $code;
 }
 
-// Nyelv beállítás session-ben tárolása
 if (isset($_GET['lang']) && file_exists($langDir . "{$_GET['lang']}.json")) {
     $_SESSION['lang'] = $_GET['lang'];
 }
 
-// Ha a session-ben van tárolt nyelv, használjuk azt, különben alapértelmezett (HU)
-$lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'HU';
+$lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'GB';
 $langFile = $langDir . "$lang.json";
 
 if (file_exists($langFile)) {
@@ -32,7 +29,6 @@ if (file_exists($langFile)) {
 }
 ?>
 <?php
-// PHP bővítmények listája, amelyeknek engedélyezve kell lenniük
 $required_extensions = array(
     'mysqli',
     'curl'
@@ -86,7 +82,7 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
 
 
 <!DOCTYPE html>
-<html lang="hu">
+<html lang="GB">
 
 <head>
     <meta charset="UTF-8">
@@ -96,6 +92,8 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="shortcut icon" href="https://gymoneglobal.com/assets/img/logo.png" type="image/x-icon">
+
     <title>GYM One - <?php echo $translations["install"]; ?></title>
 </head>
 
@@ -114,11 +112,12 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
                     <div class="card-body">
                         <form action="add_to_env.php" method="POST">
                             <div class="mb-3">
-                                <label for="businessName" class="form-label"><?php echo $translations["gym-name"];?></label>
+                                <label for="businessName"
+                                    class="form-label"><?php echo $translations["gym-name"]; ?></label>
                                 <input type="text" class="form-control" id="businessName" name="businessName" required>
                             </div>
                             <div class="mb-3">
-                                <label for="langCode" class="form-label"><?php echo $translations["lang"];?></label>
+                                <label for="langCode" class="form-label"><?php echo $translations["lang"]; ?></label>
                                 <select class="form-select" id="langCode" name="langCode" required>
                                     <?php foreach ($languages as $code): ?>
                                         <option value="<?php echo $code; ?>"><?php echo $translations["$code"]; ?></option>
@@ -126,22 +125,24 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label for="country" class="form-label"><?php echo $translations["country"];?>:</label>
+                                <label for="country" class="form-label"><?php echo $translations["country"]; ?>:</label>
                                 <input type="text" class="form-control" id="country" name="country" required>
                             </div>
                             <div class="mb-3">
-                                <label for="city" class="form-label"><?php echo $translations["city"];?>:</label>
+                                <label for="city" class="form-label"><?php echo $translations["city"]; ?>:</label>
                                 <input type="text" class="form-control" id="city" name="city" required>
                             </div>
                             <div class="mb-3">
-                                <label for="street" class="form-label"><?php echo $translations["street"];?>:</label>
+                                <label for="street" class="form-label"><?php echo $translations["street"]; ?>:</label>
                                 <input type="text" class="form-control" id="street" name="street" required>
                             </div>
                             <div class="mb-3">
-                                <label for="houseNumber" class="form-label"><?php echo $translations["hause-no"];?>:</label>
+                                <label for="houseNumber"
+                                    class="form-label"><?php echo $translations["hause-no"]; ?>:</label>
                                 <input type="text" class="form-control" id="houseNumber" name="houseNumber" required>
                             </div>
-                            <button type="submit" class="btn btn-primary"><?php echo $translations["continue"];?></button>
+                            <button type="submit"
+                                class="btn btn-primary"><?php echo $translations["continue"]; ?></button>
                         </form>
                     </div>
                 </div>
@@ -160,7 +161,8 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
             <div class="row gy-4">
                 <div class="col-md-4 mb-1">
                     <h2 class="mb-4">
-                        <img src="https://GYM.One.com/assets/svg/logo-text.svg" alt="GYM.One" height="50">
+                        <img src="https://gymoneglobal.com/assets/img/text-color-logo.png" alt="GYM One Logo"
+                            height="105">
                     </h2>
 
                     <p><?php echo $translations["herotext"]; ?></p>
@@ -177,9 +179,8 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
                         </li>
                         <li><a href="<?php echo $discord_url; ?>" target="_blank" rel="noopener noreferrer">Discord</a>
                         </li>
-                        <li><a href="<?php echo $twitter_url; ?>" target="_blank" rel="noopener noreferrer">Twitter</a>
+                        <li><a href="https://gymoneglobal.com/support"><?php echo $translations["support-us"]; ?></a>
                         </li>
-                        <li><a href="support/"><?php echo $translations["support-us"]; ?></a></li>
                     </ul>
                 </div>
             </div>

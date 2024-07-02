@@ -47,6 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
     $is_boss = 1;
+    $userid = 9999999999;
 
     if ($password != $confirm_password) {
         die("Password and confirm password do not match");
@@ -54,8 +55,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-    // 10 számjegyű véletlenszerű user_id generálása
-    $userid = strval(random_int(1000000000, 9999999999));
 
     $sql = "INSERT INTO workers (userid, firstname, lastname, username, password_hash, is_boss) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);

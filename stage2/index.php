@@ -3,9 +3,8 @@ session_start(); // Session kezdése vagy folytatása
 
 // DEF INFO
 $github_url = "https://github.com/mayerbalintdev/";
-$discord_url = "";
-$twitter_url = "";
-$installer_version = "Beta 0.1";
+$discord_url = "https://gymoneglobal.com/discord";
+$installer_version = "V1.0.0";
 
 $langDir = __DIR__ . "/../assets/lang/";
 $langFiles = glob($langDir . "*.json");
@@ -16,13 +15,11 @@ foreach ($langFiles as $file) {
     $languages[$code] = $code;
 }
 
-// Nyelv beállítás session-ben tárolása
 if (isset($_GET['lang']) && file_exists($langDir . "{$_GET['lang']}.json")) {
     $_SESSION['lang'] = $_GET['lang'];
 }
 
-// Ha a session-ben van tárolt nyelv, használjuk azt, különben alapértelmezett (HU)
-$lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'HU';
+$lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'GB';
 $langFile = $langDir . "$lang.json";
 
 if (file_exists($langFile)) {
@@ -34,7 +31,7 @@ if (file_exists($langFile)) {
 
 
 <!DOCTYPE html>
-<html lang="hu">
+<html lang="GB">
 
 <head>
     <meta charset="UTF-8">
@@ -43,6 +40,8 @@ if (file_exists($langFile)) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="shortcut icon" href="https://gymoneglobal.com/assets/img/logo.png" type="image/x-icon">
+
     <title>GYM One - <?php echo $translations["install"]; ?></title>
 </head>
 
@@ -61,19 +60,19 @@ if (file_exists($langFile)) {
                     <div class="card-body">
                         <form action="process_form.php" method="post">
                             <div class="form-group">
-                                <label for="servername"><?php echo $translations["db-host"];?></label>
+                                <label for="servername"><?php echo $translations["db-host"]; ?></label>
                                 <input type="text" class="form-control" id="servername" name="servername" required>
                             </div>
                             <div class="form-group">
-                                <label for="username"><?php echo $translations["db-username"];?></label>
+                                <label for="username"><?php echo $translations["db-username"]; ?></label>
                                 <input type="text" class="form-control" id="username" name="username" required>
                             </div>
                             <div class="form-group">
-                                <label for="password"><?php echo $translations["db-password"];?></label>
-                                <input type="password" class="form-control" id="password" name="password" required>
+                                <label for="password"><?php echo $translations["db-password"]; ?></label>
+                                <input type="password" class="form-control" id="password" name="password">
                             </div>
                             <div class="form-group">
-                                <label for="dbname"><?php echo $translations["db-name"];?></label>
+                                <label for="dbname"><?php echo $translations["db-name"]; ?></label>
                                 <input type="text" class="form-control" id="dbname" name="dbname" required>
                             </div>
                             <div class="mt-3"></div>
@@ -96,7 +95,8 @@ if (file_exists($langFile)) {
             <div class="row gy-4">
                 <div class="col-md-4 mb-1">
                     <h2 class="mb-4">
-                        <img src="https://GYM.One.com/assets/svg/logo-text.svg" alt="GYM.One" height="50">
+                        <img src="https://gymoneglobal.com/assets/img/text-color-logo.png" alt="GYM One Logo"
+                            height="105">
                     </h2>
 
                     <p><?php echo $translations["herotext"]; ?></p>
@@ -113,9 +113,8 @@ if (file_exists($langFile)) {
                         </li>
                         <li><a href="<?php echo $discord_url; ?>" target="_blank" rel="noopener noreferrer">Discord</a>
                         </li>
-                        <li><a href="<?php echo $twitter_url; ?>" target="_blank" rel="noopener noreferrer">Twitter</a>
+                        <li><a href="https://gymoneglobal.com/support"><?php echo $translations["support-us"]; ?></a>
                         </li>
-                        <li><a href="support/"><?php echo $translations["support-us"]; ?></a></li>
                     </ul>
                 </div>
             </div>
@@ -133,25 +132,24 @@ if (file_exists($langFile)) {
                 </p>
             </div>
         </div>
-    </div>
-    <script>
-        function toggleButton() {
-            var checkBox = document.getElementById('acceptTerms');
-            var button = document.getElementById('continueButton');
-            button.disabled = !checkBox.checked;
-        }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
-        integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
-        crossorigin="anonymous"></script>
-    <script>
-        function changeLanguage(lang) {
-            window.location.href = '?lang=' + lang;
-        }
-    </script>
+        <script>
+            function toggleButton() {
+                var checkBox = document.getElementById('acceptTerms');
+                var button = document.getElementById('continueButton');
+                button.disabled = !checkBox.checked;
+            }
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+            integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+            crossorigin="anonymous"></script>
+        <script>
+            function changeLanguage(lang) {
+                window.location.href = '?lang=' + lang;
+            }
+        </script>
 </body>
 
 </html>

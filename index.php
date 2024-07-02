@@ -3,9 +3,8 @@ session_start(); // Session kezdése vagy folytatása
 
 // DEF INFO
 $github_url = "https://github.com/mayerbalintdev/";
-$discord_url = "";
-$twitter_url = "";
-$installer_version = "Beta 0.1";
+$discord_url = "https://gymoneglobal.com/discord";
+$installer_version = "V1.0.0";
 
 $langDir = __DIR__ . "/assets/lang/";
 $langFiles = glob($langDir . "*.json");
@@ -16,13 +15,11 @@ foreach ($langFiles as $file) {
   $languages[$code] = $code;
 }
 
-// Nyelv beállítás session-ben tárolása
 if (isset($_GET['lang']) && file_exists($langDir . "{$_GET['lang']}.json")) {
   $_SESSION['lang'] = $_GET['lang'];
 }
 
-// Ha a session-ben van tárolt nyelv, használjuk azt, különben alapértelmezett (HU)
-$lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'HU';
+$lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'GB';
 $langFile = $langDir . "$lang.json";
 
 if (file_exists($langFile)) {
@@ -30,12 +27,12 @@ if (file_exists($langFile)) {
 } else {
   die("A nyelvi fájl nem található: $langFile");
 }
-$texts = ['Wellcome!', 'Üdvözöllek!', 'Welkom!'];
+$texts = ['Welcome!', 'Üdvözöllek!', 'Welkom!', 'Bienvenue!', 'Benvenuti!', 'Velkommen!', 'Witamy!', 'Добродошли!', 'Vitajte!', 'Dobrodošli!', 'Bienvenido!', 'Hoşgeldiniz!', 'Bun venit!', 'Pozdravljam!', 'मैं आपका स्वागत करता हूं', 'أهلاً وسهلاً بك'];
 ?>
 
 
 <!DOCTYPE html>
-<html lang="hu">
+<html lang="GB">
 
 <head>
   <meta charset="UTF-8">
@@ -44,6 +41,7 @@ $texts = ['Wellcome!', 'Üdvözöllek!', 'Welkom!'];
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="shortcut icon" href="https://gymoneglobal.com/assets/img/logo.png" type="image/x-icon">
   <title>GYM One - <?php echo $translations["install"]; ?></title>
 </head>
 
@@ -83,6 +81,7 @@ $texts = ['Wellcome!', 'Üdvözöllek!', 'Welkom!'];
       </div>
     </div>
   </div>
+  <div class="mt-5"></div>
   <div class="footer-waves">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 8" fill="#252525">
       <path opacity="0.7" d="M0 8 V8 C20 0, 40 0, 60 8 V8z"></path>
@@ -94,7 +93,7 @@ $texts = ['Wellcome!', 'Üdvözöllek!', 'Welkom!'];
       <div class="row gy-4">
         <div class="col-md-4 mb-1">
           <h2 class="mb-4">
-            <img src="https://GYM.One.com/assets/svg/logo-text.svg" alt="GYM.One" height="50">
+            <img src="https://gymoneglobal.com/assets/img/text-color-logo.png" alt="GYM One Logo" height="105">
           </h2>
 
           <p><?php echo $translations["herotext"]; ?></p>
@@ -109,8 +108,7 @@ $texts = ['Wellcome!', 'Üdvözöllek!', 'Welkom!'];
           <ul class="list-unstyled links">
             <li><a href="<?php echo $github_url; ?>" target="_blank" rel="noopener noreferrer">GitHub</a></li>
             <li><a href="<?php echo $discord_url; ?>" target="_blank" rel="noopener noreferrer">Discord</a></li>
-            <li><a href="<?php echo $twitter_url; ?>" target="_blank" rel="noopener noreferrer">Twitter</a></li>
-            <li><a href="support/"><?php echo $translations["support-us"]; ?></a></li>
+            <li><a href="https://gymoneglobal.com/support"><?php echo $translations["support-us"]; ?></a></li>
           </ul>
         </div>
       </div>

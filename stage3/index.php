@@ -3,9 +3,8 @@ session_start(); // Session kezdése vagy folytatása
 
 // DEF INFO
 $github_url = "https://github.com/mayerbalintdev/";
-$discord_url = "";
-$twitter_url = "";
-$installer_version = "Beta 0.1";
+$discord_url = "https://gymoneglobal.com/discord";
+$installer_version = "V1.0.0";
 
 $langDir = __DIR__ . "/../assets/lang/";
 $langFiles = glob($langDir . "*.json");
@@ -16,13 +15,11 @@ foreach ($langFiles as $file) {
     $languages[$code] = $code;
 }
 
-// Nyelv beállítás session-ben tárolása
 if (isset($_GET['lang']) && file_exists($langDir . "{$_GET['lang']}.json")) {
     $_SESSION['lang'] = $_GET['lang'];
 }
 
-// Ha a session-ben van tárolt nyelv, használjuk azt, különben alapértelmezett (HU)
-$lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'HU';
+$lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'GB';
 $langFile = $langDir . "$lang.json";
 
 if (file_exists($langFile)) {
@@ -32,10 +29,9 @@ if (file_exists($langFile)) {
 }
 ?>
 <?php
-// PHP bővítmények listája, amelyeknek engedélyezve kell lenniük
 $required_extensions = array(
     'mysqli',
-    'curl'
+    'zip'
 );
 
 $enabled_extensions = get_loaded_extensions();
@@ -96,6 +92,8 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="shortcut icon" href="https://gymoneglobal.com/assets/img/logo.png" type="image/x-icon">
+
     <title>GYM One - <?php echo $translations["install"]; ?></title>
 </head>
 
@@ -114,7 +112,7 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
                     <div class="card-body">
                         <ul class="list-group">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <?php echo $translations["php-version"];?> ( <?php echo $current_php_version; ?> )
+                                <?php echo $translations["php-version"]; ?> ( <?php echo $current_php_version; ?> )
                                 <?php if (version_compare($current_php_version, $min_php_version) >= 0): ?>
                                     <span class="badge bg-success"><i class="bi bi-check"></i></span>
                                 <?php else: ?>
@@ -123,7 +121,7 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
                             </li>
                             <?php foreach ($required_extensions as $extension): ?>
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <?php echo $extension; ?> - <?php echo $translations["extension"];?>
+                                    <?php echo $extension; ?> - <?php echo $translations["extension"]; ?>
                                     <?php if (in_array($extension, $enabled_extensions)): ?>
                                         <span class="badge bg-success"><i class="bi bi-check"></i></span> <!-- pipa -->
                                     <?php else: ?>
@@ -132,7 +130,7 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
                                 </li>
                             <?php endforeach; ?>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <?php echo $translations["success-conn"];?>
+                                <?php echo $translations["success-conn"]; ?>
                                 <?php if ($database_connected): ?>
                                     <span class="badge bg-success"><i class="bi bi-check"></i></span>
                                 <?php else: ?>
@@ -143,11 +141,12 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
                     </div>
                     <div class="card-footer">
                         <?php if (version_compare($current_php_version, $min_php_version) >= 0 && count(array_diff($required_extensions, $enabled_extensions)) === 0 && $database_connected): ?>
-                            <a href="../stage4" class="btn btn-primary"><?php echo $translations["continue"];?></a>
+                            <a href="../stage4" class="btn btn-primary"><?php echo $translations["continue"]; ?></a>
                         <?php else: ?>
-                            <a class="btn btn-secondary" disabled><?php echo $translations["continue"];?></a> <!-- Tovább gomb letiltva -->
+                            <a class="btn btn-secondary" disabled><?php echo $translations["continue"]; ?></a>
+                            <!-- Tovább gomb letiltva -->
                             <?php if (version_compare($current_php_version, $min_php_version) < 0): ?>
-                                <p class="mt-2"><?php echo $translations["min-php"];?>: <?php echo $min_php_version; ?></p>
+                                <p class="mt-2"><?php echo $translations["min-php"]; ?>: <?php echo $min_php_version; ?></p>
                             <?php endif; ?>
                         <?php endif; ?>
                     </div>
@@ -166,7 +165,8 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
             <div class="row gy-4">
                 <div class="col-md-4 mb-1">
                     <h2 class="mb-4">
-                        <img src="https://GYM.One.com/assets/svg/logo-text.svg" alt="GYM.One" height="50">
+                        <img src="https://gymoneglobal.com/assets/img/text-color-logo.png" alt="GYM One Logo"
+                            height="105">
                     </h2>
 
                     <p><?php echo $translations["herotext"]; ?></p>
@@ -183,9 +183,8 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
                         </li>
                         <li><a href="<?php echo $discord_url; ?>" target="_blank" rel="noopener noreferrer">Discord</a>
                         </li>
-                        <li><a href="<?php echo $twitter_url; ?>" target="_blank" rel="noopener noreferrer">Twitter</a>
+                        <li><a href="https://gymoneglobal.com/support"><?php echo $translations["support-us"]; ?></a>
                         </li>
-                        <li><a href="support/"><?php echo $translations["support-us"]; ?></a></li>
                     </ul>
                 </div>
             </div>
@@ -203,25 +202,24 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
                 </p>
             </div>
         </div>
-    </div>
-    <script>
-        function toggleButton() {
-            var checkBox = document.getElementById('acceptTerms');
-            var button = document.getElementById('continueButton');
-            button.disabled = !checkBox.checked;
-        }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
-        integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
-        crossorigin="anonymous"></script>
-    <script>
-        function changeLanguage(lang) {
-            window.location.href = '?lang=' + lang;
-        }
-    </script>
+        <script>
+            function toggleButton() {
+                var checkBox = document.getElementById('acceptTerms');
+                var button = document.getElementById('continueButton');
+                button.disabled = !checkBox.checked;
+            }
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+            integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+            crossorigin="anonymous"></script>
+        <script>
+            function changeLanguage(lang) {
+                window.location.href = '?lang=' + lang;
+            }
+        </script>
 </body>
 
 </html>
