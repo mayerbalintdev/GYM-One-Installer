@@ -27,8 +27,23 @@ if (file_exists($langFile)) {
 } else {
     die("A nyelvi fájl nem található: $langFile");
 }
-?>
 
+// Hibaüzenet kezelése
+$error_message = '';
+if (isset($_GET['error'])) {
+    switch ($_GET['error']) {
+        case 'connection_failed':
+            $error_message = $translations["notabletoconnectdatabase"];
+            break;
+        case 'missing_fields':
+            $error_message = $translations["allform"];
+            break;
+        default:
+            $error_message = $translations["unexpectederror"];
+            break;
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html lang="GB">
@@ -58,6 +73,14 @@ if (file_exists($langFile)) {
             <div class="col-md-8 mx-auto text-center mb-5">
                 <div class="card">
                     <div class="card-body">
+
+                        <!-- Hibaüzenet megjelenítése -->
+                        <?php if ($error_message): ?>
+                            <div class="alert alert-danger" role="alert">
+                                <?php echo $error_message; ?>
+                            </div>
+                        <?php endif; ?>
+
                         <form action="process_form.php" method="post">
                             <div class="form-group">
                                 <label for="servername"><?php echo $translations["db-host"]; ?></label>
@@ -143,13 +166,4 @@ if (file_exists($langFile)) {
             integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
             crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
-            integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
-            crossorigin="anonymous"></script>
-        <script>
-            function changeLanguage(lang) {
-                window.location.href = '?lang=' + lang;
-            }
-        </script>
-</body>
-
-</html>
+            integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGr

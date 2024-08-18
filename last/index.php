@@ -1,7 +1,7 @@
 <?php
 if (isset($_POST['download'])) {
     // GitHub URL
-    $url = 'https://github.com/';
+    $url = 'https://github.com/Azuriom/Azuriom/releases/download/v1.1.10/Azuriom-1.1.10.zip';
     $tempDir = __DIR__ . '/../temp/';
     $zipFile = $tempDir . 'Azuriom-1.1.10.zip';
     

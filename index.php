@@ -19,6 +19,9 @@ if (isset($_GET['lang']) && file_exists($langDir . "{$_GET['lang']}.json")) {
   $_SESSION['lang'] = $_GET['lang'];
 }
 
+$copyrightyear = date("Y");
+
+
 $lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'GB';
 $langFile = $langDir . "$lang.json";
 
@@ -115,7 +118,7 @@ $texts = ['Welcome!', 'Üdvözöllek!', 'Welkom!', 'Bienvenue!', 'Benvenuti!', '
 
       <div class="border-top border-secondary pt-3 mt-3">
         <p class="small text-center mb-0">
-          Copyright © 2024 GYM One - <?php echo $translations["copyright"]; ?>. &nbsp;<svg
+          Copyright © <?php echo $copyrightyear;?> GYM One - <?php echo $translations["copyright"]; ?>. &nbsp;<svg
             xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill"
             viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314">

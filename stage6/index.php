@@ -122,8 +122,6 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
                             </div>
                             <p class="lead"><?php echo $translations["mail-installer"]; ?></p>
                         </div>
-                        
-
                     </div>
                 </div>
             </div>

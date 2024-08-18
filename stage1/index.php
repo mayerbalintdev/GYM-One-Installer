@@ -22,6 +22,9 @@ if (isset($_GET['lang']) && file_exists($langDir . "{$_GET['lang']}.json")) {
 $lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'GB';
 $langFile = $langDir . "$lang.json";
 
+$copyrightyear = date("Y");
+
+
 if (file_exists($langFile)) {
   $translations = json_decode(file_get_contents($langFile), true);
 } else {
@@ -49,20 +52,22 @@ if (file_exists($langFile)) {
   <div class="container justify-content-center">
     <div class="row text-center justify-content-center">
       <div class="col-md-8 mx-auto text-center mb-5">
-        <h1 class="mb-3 fw-semibold"><?php echo $translations["tos"]; ?></h1>
+        <h1 class="mb-3 fw-semibold"><?php echo $translations["legalpage"]; ?></h1>
         <p class="lead mb-4 fs-4"><?php echo $translations["installerVersion"]; ?> - <?php echo $installer_version; ?>
+        <p class="lead"><?php echo $translations["youcanacceptsomethings"]; ?></p>
         </p>
       </div>
       <div class="col-md-8 mx-auto text-center mb-5">
         <div class="card">
           <div class="card-body">
-            <embed src="#" type="application/pdf" width="100%" height="400px">
+            <!-- Dokumentumok helye -->
+            <embed id="documentViewer" src="../assets/docs/document1.pdf" type="application/pdf" width="100%" height="400px">
             <div class="form-check mt-3">
               <input type="checkbox" class="form-check-input" id="acceptTerms" onclick="toggleButton()">
-              <label class="form-check-label" for="acceptTerms"><?php echo $translations["accept-term"]; ?></label>
+              <label class="form-check-label" for="acceptTerms"><?php echo $translations["accept-docs"]; ?></label>
             </div>
-            <a href="../stage2" id="continueButton" class="btn btn-primary mt-3"
-              disabled><?php echo $translations["continue"]; ?></a>
+            <button id="continueButton" class="btn btn-primary mt-3"
+              disabled><?php echo $translations["continue"]; ?></button>
           </div>
         </div>
       </div>
@@ -101,7 +106,7 @@ if (file_exists($langFile)) {
 
       <div class="border-top border-secondary pt-3 mt-3">
         <p class="small text-center mb-0">
-          Copyright © 2024 GYM One - <?php echo $translations["copyright"]; ?>. &nbsp;<svg
+          Copyright © <?php echo $copyrightyear;?> GYM One - <?php echo $translations["copyright"]; ?>. &nbsp;<svg
             xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill"
             viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314">
@@ -113,11 +118,26 @@ if (file_exists($langFile)) {
     </div>
   </div>
   <script>
+    let currentDocument = 1;
+    const totalDocuments = 6;
+
     function toggleButton() {
-      var checkBox = document.getElementById('acceptTerms');
-      var button = document.getElementById('continueButton');
-      button.disabled = !checkBox.checked;
+      const checkbox = document.getElementById("acceptTerms");
+      const continueButton = document.getElementById("continueButton");
+
+      continueButton.disabled = !checkbox.checked;
     }
+
+    document.getElementById("continueButton").addEventListener("click", function() {
+      if (currentDocument < totalDocuments) {
+        currentDocument++;
+        document.getElementById("documentViewer").src = `../assets/docs/document${currentDocument}.pdf`;
+        document.getElementById("acceptTerms").checked = false;
+        this.disabled = true;
+      } else {
+        window.location.href = "../stage2";
+      }
+    });
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
     integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
