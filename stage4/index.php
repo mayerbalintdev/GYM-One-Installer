@@ -141,6 +141,11 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
                                     class="form-label"><?php echo $translations["hause-no"]; ?>:</label>
                                 <input type="text" class="form-control" id="houseNumber" name="houseNumber" required>
                             </div>
+                            <div class="mb-3">
+                                <label for="phoneno"
+                                    class="form-label"><?php echo $translations["phoneno"]; ?>:</label>
+                                <input type="text" class="form-control" id="houseNumber" name="houseNumber" required>
+                            </div>
                             <button type="submit"
                                 class="btn btn-primary"><?php echo $translations["continue"]; ?></button>
                         </form>
