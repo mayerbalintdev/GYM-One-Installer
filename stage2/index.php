@@ -28,7 +28,9 @@ if (file_exists($langFile)) {
     die("A nyelvi fájl nem található: $langFile");
 }
 
-// Hibaüzenet kezelése
+$copyrightyear = date("Y");
+
+
 $error_message = '';
 if (isset($_GET['error'])) {
     switch ($_GET['error']) {
@@ -39,7 +41,7 @@ if (isset($_GET['error'])) {
             $error_message = $translations["allform"];
             break;
         default:
-            $error_message = $translations["unexpectederror"];
+            $error_message = $translations["unexpected-error"];
             break;
     }
 }
@@ -74,7 +76,6 @@ if (isset($_GET['error'])) {
                 <div class="card">
                     <div class="card-body">
 
-                        <!-- Hibaüzenet megjelenítése -->
                         <?php if ($error_message): ?>
                             <div class="alert alert-danger" role="alert">
                                 <?php echo $error_message; ?>
@@ -144,7 +145,7 @@ if (isset($_GET['error'])) {
 
             <div class="border-top border-secondary pt-3 mt-3">
                 <p class="small text-center mb-0">
-                    Copyright © 2024 GYM One - <?php echo $translations["copyright"]; ?>. &nbsp;<svg
+                    Copyright © <?php echo $copyrightyear;?> GYM One - <?php echo $translations["copyright"]; ?>. &nbsp;<svg
                         xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-heart-fill" viewBox="0 0 16 16">
                         <path fill-rule="evenodd"

@@ -1,8 +1,49 @@
 <?php
-session_start(); // Session kezdése vagy folytatása
+session_start();
+
+function logServerData() {
+  $logFile = __DIR__ . '/LOG.log';
+
+  $serverIp = $_SERVER['SERVER_ADDR'] ?? 'Unknown';
+  $phpVersion = phpversion();
+  $osInfo = php_uname();
+  $clientIp = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+  $location = getLocationByIP($clientIp);
+  $currentDate = date('Y-m-d H:i:s');
+
+  $logMessage = sprintf(
+      "[%s] [Starter] Server IP: %s | OS: %s | PHP Version: %s | Client IP: %s | Location: %s\n",
+      $currentDate,
+      $serverIp,
+      $osInfo,
+      $phpVersion,
+      $clientIp,
+      $location
+  );
+
+  file_put_contents($logFile, $logMessage, FILE_APPEND);
+}
+
+function getLocationByIP($ip) {
+  $apiUrl = "http://ip-api.com/json/{$ip}";
+  
+  // API hívás
+  $response = file_get_contents($apiUrl);
+  if ($response) {
+      $data = json_decode($response, true);
+      if ($data['status'] === 'success') {
+          return $data['country'] . ', ' . $data['regionName'] . ', ' . $data['city'];
+      }
+  }
+
+  return 'Unknown Location';
+}
+
+logServerData();
+
 
 // DEF INFO
-$github_url = "https://github.com/mayerbalintdev/";
+$github_url = "https://github.com/mayerbalintdev/GYM-One";
 $discord_url = "https://gymoneglobal.com/discord";
 $installer_version = "V1.0.0";
 
@@ -30,7 +71,26 @@ if (file_exists($langFile)) {
 } else {
   die("A nyelvi fájl nem található: $langFile");
 }
-$texts = ['Welcome!', 'Üdvözöllek!', 'Welkom!', 'Bienvenue!', 'Benvenuti!', 'Velkommen!', 'Witamy!', 'Добродошли!', 'Vitajte!', 'Dobrodošli!', 'Bienvenido!', 'Hoşgeldiniz!', 'Bun venit!', 'Pozdravljam!', 'मैं आपका स्वागत करता हूं', 'أهلاً وسهلاً بك'];
+$texts = [
+  'Welcome!',           // English (Angol)
+  'Üdvözöllek!',        // Hungarian (Magyar)
+  'Welkom!',            // Dutch (Holland)
+  'Bienvenue!',         // French (Francia)
+  'Willkommen!',        // German (Német)
+  'Benvenuti!',         // Italian (Olasz)
+  'Velkommen!',         // Norwegian (Norvég)
+  'Velkommen!',         // Danish (Dán)
+  'Witamy!',            // Polish (Lengyel)
+  'Bun venit!',         // Romanian (Román)
+  'Добродошли!',        // Serbian (Szerb)
+  'Vitajte!',           // Slovak (Szlovák)
+  'Pozdravljam!',       // Slovenian (Szlovén)
+  'Bienvenido!',        // Spanish (Spanyol)
+  'Välkommen!',         // Swedish (Svéd)
+  'Hoşgeldiniz!',       // Turkish (Török)
+  'मैं आपका स्वागत करता हूं',   // Hindi (Hindi)
+  'أهلاً وسهلاً بك'          // Arabic (Arab)
+];
 ?>
 
 
@@ -53,6 +113,7 @@ $texts = ['Welcome!', 'Üdvözöllek!', 'Welkom!', 'Bienvenue!', 'Benvenuti!', '
   <div class="container justify-content-center">
     <div class="row text-center justify-content-center">
       <div class="col-md-8 mx-auto text-center mb-5">
+      <img class="img img-fluid" src="https://gymoneglobal.com/assets/img/text-logo.png" alt="GYM One Logo" width="35%">
         <h1 id="animated-text" class="mb-3 fw-semibold">!</h1>
         <p class="lead mb-4 fs-4"><?php echo $translations["installerVersion"]; ?> - <?php echo $installer_version; ?>
         </p>
@@ -118,14 +179,12 @@ $texts = ['Welcome!', 'Üdvözöllek!', 'Welkom!', 'Bienvenue!', 'Benvenuti!', '
 
       <div class="border-top border-secondary pt-3 mt-3">
         <p class="small text-center mb-0">
-          Copyright © <?php echo $copyrightyear;?> GYM One - <?php echo $translations["copyright"]; ?>. &nbsp;<svg
+          Copyright © <?php echo $copyrightyear; ?> GYM One - <?php echo $translations["copyright"]; ?>. &nbsp;<svg
             xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill"
             viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314">
             </path>
-          </svg>
-          - <a href="https://www.mayerbalint.hu/">Mayer Bálint</a>
-        </p>
+          </svg> </p>
       </div>
     </div>
   </div>

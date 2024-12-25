@@ -1,5 +1,5 @@
 <?php
-session_start(); // Session kezdése vagy folytatása
+session_start();
 
 // DEF INFO
 $github_url = "https://github.com/mayerbalintdev/";
@@ -24,14 +24,18 @@ $langFile = $langDir . "$lang.json";
 
 $copyrightyear = date("Y");
 
-
 if (file_exists($langFile)) {
   $translations = json_decode(file_get_contents($langFile), true);
 } else {
   die("A nyelvi fájl nem található: $langFile");
 }
-?>
 
+function logDocumentAcceptance($documentNumber) {
+    $logFile = "../LOG.log";
+    $logMessage = "[" . date("Y-m-d H:i:s") . "] [STAGE1] ✅  Document $documentNumber accepted." . PHP_EOL;
+    file_put_contents($logFile, $logMessage, FILE_APPEND);
+}
+?>
 
 <!DOCTYPE html>
 <html lang="GB">
@@ -60,7 +64,6 @@ if (file_exists($langFile)) {
       <div class="col-md-8 mx-auto text-center mb-5">
         <div class="card">
           <div class="card-body">
-            <!-- Dokumentumok helye -->
             <embed id="documentViewer" src="../assets/docs/document1.pdf" type="application/pdf" width="100%" height="400px">
             <div class="form-check mt-3">
               <input type="checkbox" class="form-check-input" id="acceptTerms" onclick="toggleButton()">
@@ -130,6 +133,8 @@ if (file_exists($langFile)) {
 
     document.getElementById("continueButton").addEventListener("click", function() {
       if (currentDocument < totalDocuments) {
+        logDocumentAcceptance(currentDocument);
+
         currentDocument++;
         document.getElementById("documentViewer").src = `../assets/docs/document${currentDocument}.pdf`;
         document.getElementById("acceptTerms").checked = false;
@@ -138,6 +143,29 @@ if (file_exists($langFile)) {
         window.location.href = "../stage2";
       }
     });
+
+    function logDocumentAcceptance(documentNumber) {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "", true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.send("document=" + documentNumber);
+    }
+  </script>
+  <script>
+    if (window.location.href.indexOf('?') === -1) {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('document')) {
+        const documentNumber = urlParams.get('document');
+        if (documentNumber >= 1 && documentNumber <= 6) {
+          <?php
+            if (isset($_POST['document'])) {
+              $documentNumber = intval($_POST['document']);
+              logDocumentAcceptance($documentNumber); 
+            }
+          ?>
+        }
+      }
+    }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
     integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
@@ -145,11 +173,6 @@ if (file_exists($langFile)) {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
     integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
     crossorigin="anonymous"></script>
-  <script>
-    function changeLanguage(lang) {
-      window.location.href = '?lang=' + lang;
-    }
-  </script>
 </body>
 
 </html>

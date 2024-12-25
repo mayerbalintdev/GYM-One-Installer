@@ -35,7 +35,9 @@ $required_extensions = array(
 );
 
 $enabled_extensions = get_loaded_extensions();
-$min_php_version = '1.0.0';
+$min_php_version = '8.1';
+$copyrightyear = date("Y");
+
 
 $current_php_version = phpversion();
 
@@ -79,6 +81,38 @@ foreach ($env_lines as $line) {
 $database_connected = check_database_connection($db_host, $db_username, $db_password, $db_name);
 
 ?>
+<?php
+function log_message($message) {
+    $log_file = __DIR__ . '/../LOG.log';
+    $timestamp = date("Y-m-d H:i:s");
+    $log_entry = "[$timestamp] [STAGE3] $message\n";
+    
+    file_put_contents($log_file, $log_entry, FILE_APPEND);
+}
+
+log_message(" 🔄 Page refreshed.");
+
+if (version_compare($current_php_version, $min_php_version) >= 0) {
+    log_message(" ✅ PHP version check passed: $current_php_version >= $min_php_version");
+} else {
+    log_message(" ❌ PHP version check failed: $current_php_version < $min_php_version");
+}
+
+foreach ($required_extensions as $extension) {
+    if (in_array($extension, $enabled_extensions)) {
+        log_message(" ✅ Extension check passed: $extension is enabled");
+    } else {
+        log_message(" ❌ Extension check failed: $extension is not enabled");
+    }
+}
+
+if ($database_connected) {
+    log_message(" ✅ Database connection successful.");
+} else {
+    log_message(" ❌ Database connection failed.");
+}
+?>
+
 
 
 <!DOCTYPE html>
@@ -144,7 +178,6 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
                             <a href="../stage4" class="btn btn-primary"><?php echo $translations["continue"]; ?></a>
                         <?php else: ?>
                             <a class="btn btn-secondary" disabled><?php echo $translations["continue"]; ?></a>
-                            <!-- Tovább gomb letiltva -->
                             <?php if (version_compare($current_php_version, $min_php_version) < 0): ?>
                                 <p class="mt-2"><?php echo $translations["min-php"]; ?>: <?php echo $min_php_version; ?></p>
                             <?php endif; ?>
@@ -191,7 +224,7 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
 
             <div class="border-top border-secondary pt-3 mt-3">
                 <p class="small text-center mb-0">
-                    Copyright © 2024 GYM One - <?php echo $translations["copyright"]; ?>. &nbsp;<svg
+                    Copyright © <?php echo $copyrightyear;?> GYM One - <?php echo $translations["copyright"]; ?>. &nbsp;<svg
                         xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-heart-fill" viewBox="0 0 16 16">
                         <path fill-rule="evenodd"

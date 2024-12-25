@@ -32,7 +32,6 @@ if (file_exists($langFile)) {
 }
 ?>
 <?php
-// PHP bővítmények listája, amelyeknek engedélyezve kell lenniük
 $required_extensions = array(
     'mysqli',
     'curl'
@@ -81,6 +80,7 @@ foreach ($env_lines as $line) {
 }
 
 $database_connected = check_database_connection($db_host, $db_username, $db_password, $db_name);
+$copyrightyear = date("Y");
 
 ?>
 
@@ -104,7 +104,7 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
     <div class="container justify-content-center">
         <div class="row text-center justify-content-center">
             <div class="col-md-8 mx-auto text-center mb-5">
-                <h1 class="mb-3 fw-semibold"><?php echo $translations["mailpage"]; ?></h1>
+                <h1 class="mb-3 fw-semibold"><?php echo $translations["boss-register"]; ?></h1>
                 <p class="lead mb-4 fs-4"><?php echo $translations["installerVersion"]; ?> -
                     <?php echo $installer_version; ?>
                 </p>
@@ -120,8 +120,44 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
                                         d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.553.553 0 0 1-1.1 0z" />
                                 </svg>
                             </div>
-                            <p class="lead"><?php echo $translations["mail-installer"]; ?></p>
+                            <p class="lead"><?php echo $translations["first-member"]; ?></p>
                         </div>
+                        <form action="reg.php" method="POST">
+                            <div class="form-group">
+                                <label for="username"><?php echo $translations["username"];?></label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="firstname"><?php echo $translations["firstname"];?></label>
+                                        <input type="text" class="form-control" id="firstname" name="firstname"
+                                            required>
+                                    </div>
+                                    <div class="col">
+                                        <label for="lastname"><?php echo $translations["lastname"];?></label>
+                                        <input type="text" class="form-control" id="lastname" name="lastname" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="password"><?php echo $translations["password"];?></label>
+                                        <input type="password" class="form-control" id="password" name="password"
+                                            required>
+                                    </div>
+                                    <div class="col">
+                                        <label for="confirm_password"><?php echo $translations["password-confirm"];?></label>
+                                        <input type="password" class="form-control" id="confirm_password"
+                                            name="confirm_password" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-3"></div>
+                            <button type="submit" class="btn btn-primary"><?php echo $translations["register"];?></button>
+                        </form>
+
                     </div>
                 </div>
             </div>
@@ -164,7 +200,7 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
 
             <div class="border-top border-secondary pt-3 mt-3">
                 <p class="small text-center mb-0">
-                    Copyright © 2024 GYM One - <?php echo $translations["copyright"]; ?>. &nbsp;<svg
+                    Copyright © <?php echo $copyrightyear;?> GYM One - <?php echo $translations["copyright"]; ?>. &nbsp;<svg
                         xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-heart-fill" viewBox="0 0 16 16">
                         <path fill-rule="evenodd"
