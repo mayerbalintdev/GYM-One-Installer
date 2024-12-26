@@ -66,10 +66,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("sssssi", $userid, $firstname, $lastname, $username, $password_hash, $is_boss);
 
     if ($stmt->execute()) {
-        header("Location: ../stage6");
+        header("Location: ../stage7");
+        $logMessage = "[" . date("Y-m-d H:i:s") . "] [STAGE6] ✅ Boss account added: $username ($firstname $lastname) \n";
+        file_put_contents("../LOG.log", $logMessage, FILE_APPEND);
         exit();
     } else {
         echo "Error: " . $conn->error;
+        $logMessage = "[" . date("Y-m-d H:i:s") . "] [STAGE6] ❌ ERROR DURING ADDING: $username ($firstname $lastname) \n";
+        file_put_contents("../LOG.log", $logMessage, FILE_APPEND);
     }
 
     $stmt->close();

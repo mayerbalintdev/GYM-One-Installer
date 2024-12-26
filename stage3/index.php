@@ -85,7 +85,7 @@ $database_connected = check_database_connection($db_host, $db_username, $db_pass
 function log_message($message) {
     $log_file = __DIR__ . '/../LOG.log';
     $timestamp = date("Y-m-d H:i:s");
-    $log_entry = "[$timestamp] [STAGE3] $message\n";
+    $log_entry = "[$timestamp] [STAGE3]$message\n";
     
     file_put_contents($log_file, $log_entry, FILE_APPEND);
 }
