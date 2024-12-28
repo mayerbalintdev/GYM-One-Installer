@@ -16,12 +16,10 @@ foreach ($langFiles as $file) {
     $languages[$code] = $code;
 }
 
-// Nyelv beállítás session-ben tárolása
 if (isset($_GET['lang']) && file_exists($langDir . "{$_GET['lang']}.json")) {
     $_SESSION['lang'] = $_GET['lang'];
 }
 
-// Ha a session-ben van tárolt nyelv, használjuk azt, különben alapértelmezett (HU)
 $lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'HU';
 $langFile = $langDir . "$lang.json";
 
@@ -97,6 +95,8 @@ $copyrightyear = date("Y");
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
     <title>GYM One - <?php echo $translations["install"]; ?></title>
+    <link rel="shortcut icon" href="https://gymoneglobal.com/assets/img/logo.png" type="image/x-icon">
+
 </head>
 
 <body>

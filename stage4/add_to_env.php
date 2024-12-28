@@ -33,7 +33,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "Nem sikerült megnyitni az .env fájlt!";
         }
     } else {
-        // Logolás, ha hiányzó adatot találtunk
         $logMessage = "[" . date("Y-m-d H:i:s") . "] [STAGE4] ❌ Missing data! Gym name or other required fields are empty.\n";
         file_put_contents("../LOG.log", $logMessage, FILE_APPEND);
 

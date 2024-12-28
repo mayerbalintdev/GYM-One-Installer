@@ -16,12 +16,10 @@ foreach ($langFiles as $file) {
     $languages[$code] = $code;
 }
 
-// Nyelv beállítás session-ben tárolása
 if (isset($_GET['lang']) && file_exists($langDir . "{$_GET['lang']}.json")) {
     $_SESSION['lang'] = $_GET['lang'];
 }
 
-// Ha a session-ben van tárolt nyelv, használjuk azt, különben alapértelmezett (HU)
 $lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'HU';
 $langFile = $langDir . "$lang.json";
 
@@ -32,7 +30,6 @@ if (file_exists($langFile)) {
 }
 ?>
 <?php
-// PHP bővítmények listája, amelyeknek engedélyezve kell lenniük
 $required_extensions = array(
     'mysqli',
     'curl'
@@ -80,6 +77,66 @@ foreach ($env_lines as $line) {
     }
 }
 
+$env_file = '../temp/.env';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $smtp_host = isset($_POST['smtp_host']) ? $_POST['smtp_host'] : '';
+    $smtp_port = isset($_POST['smtp_port']) ? $_POST['smtp_port'] : '';
+    $smtp_encryption = isset($_POST['smtp_encryption']) ? $_POST['smtp_encryption'] : 'TLS';
+    $smtp_username = isset($_POST['smtp_username']) ? $_POST['smtp_username'] : '';
+    $smtp_password = isset($_POST['smtp_password']) ? $_POST['smtp_password'] : '';
+
+    $env_data = [];
+    if (file_exists($env_file)) {
+        $file_contents = file_get_contents($env_file);
+        foreach (explode("\n", $file_contents) as $line) {
+            if (!empty($line) && strpos($line, '=') !== false) {
+                list($key, $value) = explode('=', $line, 2);
+                $env_data[trim($key)] = trim($value);
+            }
+        }
+    }
+
+    $new_entries = [
+        "MAIL_HOST" => $smtp_host,
+        "MAIL_PORT" => $smtp_port,
+        "MAIL_USERNAME" => $smtp_username,
+        "MAIL_PASSWORD" => $smtp_password,
+        "MAIL_ENCRYPTION" => $smtp_encryption
+    ];
+
+    foreach ($new_entries as $key => $value) {
+        if (!isset($env_data[$key])) {
+            $env_data[$key] = $value;
+        }
+    }
+
+    $env_content = "";
+    foreach ($env_data as $key => $value) {
+        $env_content .= "$key=$value\n";
+    }
+
+    if (file_put_contents($env_file, $env_content)) {
+        header("Location: ../lastone");
+        $logMessage = "[" . date("Y-m-d H:i:s") . "] [STAGE7] ✅ SMTP data successfully updated\n";
+        file_put_contents("../LOG.log", $logMessage, FILE_APPEND);
+    } else {
+        $logMessage = "[" . date("Y-m-d H:i:s") . "] [STAGE7] ❌ SMTP data could not be written to file. The file is not created or has been manipulated\n";
+        file_put_contents("../LOG.log", $logMessage, FILE_APPEND);
+    }
+} else {
+    $env_data = [];
+    if (file_exists($env_file)) {
+        $file_contents = file_get_contents($env_file);
+        foreach (explode("\n", $file_contents) as $line) {
+            if (!empty($line) && strpos($line, '=') !== false) {
+                list($key, $value) = explode('=', $line, 2);
+                $env_data[trim($key)] = trim($value);
+            }
+        }
+    }
+}
+
 $database_connected = check_database_connection($db_host, $db_username, $db_password, $db_name);
 $copyrightyear = date("Y");
 
@@ -93,11 +150,11 @@ $copyrightyear = date("Y");
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
     <title>GYM One - <?php echo $translations["install"]; ?></title>
+    <link rel="shortcut icon" href="https://gymoneglobal.com/assets/img/logo.png" type="image/x-icon">
 </head>
 
 <body>
@@ -123,6 +180,37 @@ $copyrightyear = date("Y");
                             </div>
                             <p class="lead"><?php echo $translations["mail-installer"]; ?></p>
                         </div>
+                        <form method="POST">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="smtp_host" class="form-label">SMTP <?php echo $translations["host"]; ?>:</label>
+                                    <input type="text" class="form-control" id="smtp_host" name="smtp_host" value="<?= htmlspecialchars($env_data['MAIL_HOST'] ?? '') ?>">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="smtp_port" class="form-label">SMTP <?php echo $translations["port"]; ?>:</label>
+                                    <input type="number" min="1" max="65535" class="form-control" id="smtp_port" name="smtp_port" value="<?= htmlspecialchars($env_data['MAIL_PORT'] ?? '') ?>">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="smtp_encryption" class="form-label">SMTP <?php echo $translations["encry"]; ?>:</label>
+                                    <select class="form-select" id="smtp_encryption" name="smtp_encryption">
+                                        <option value="TLS" <?= ($env_data['MAIL_ENCRYPTION'] ?? '') == 'TLS' ? 'selected' : '' ?>>TLS</option>
+                                        <option value="SSL" <?= ($env_data['MAIL_ENCRYPTION'] ?? '') == 'SSL' ? 'selected' : '' ?>>SSL</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="smtp_username" class="form-label">SMTP <?php echo $translations["username"]; ?>:</label>
+                                    <input type="password" class="form-control" id="smtp_username" name="smtp_username" value="<?= htmlspecialchars($env_data['MAIL_USERNAME'] ?? '') ?>">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="smtp_password" class="form-label">SMTP <?php echo $translations["password"]; ?>:</label>
+                                    <input type="password" class="form-control" id="smtp_password" name="smtp_password" value="<?= htmlspecialchars($env_data['MAIL_PASSWORD'] ?? '') ?>">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><?php echo $translations["save"]; ?></button>
+                        </form>
+
                     </div>
                 </div>
             </div>
@@ -165,7 +253,7 @@ $copyrightyear = date("Y");
 
             <div class="border-top border-secondary pt-3 mt-3">
                 <p class="small text-center mb-0">
-                    Copyright © <?php echo $copyrightyear;?> GYM One - <?php echo $translations["copyright"]; ?>. &nbsp;<svg
+                    Copyright © <?php echo $copyrightyear; ?> GYM One - <?php echo $translations["copyright"]; ?>. &nbsp;<svg
                         xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-heart-fill" viewBox="0 0 16 16">
                         <path fill-rule="evenodd"
