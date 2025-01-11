@@ -6,18 +6,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $city = $_POST["city"];
     $street = $_POST["street"];
     $houseNumber = $_POST["houseNumber"];
+    $phoneno = $_POST["phoneno"];
 
     if (!empty($businessName) && !empty($langCode) && !empty($country) && !empty($city) && !empty($street) && !empty($houseNumber)) {
         $envFile = fopen("../temp/.env", "a");
 
         if ($envFile) {
             fwrite($envFile, "\n");
-            fwrite($envFile, "BUSINESS_NAME=\"$businessName\"\n");
-            fwrite($envFile, "LANG_CODE=\"$langCode\"\n");
-            fwrite($envFile, "COUNTRY=\"$country\"\n");
-            fwrite($envFile, "CITY=\"$city\"\n");
-            fwrite($envFile, "STREET=\"$street\"\n");
-            fwrite($envFile, "HOUSE_NUMBER=\"$houseNumber\"\n");
+            fwrite($envFile, "BUSINESS_NAME=$businessName\n");
+            fwrite($envFile, "LANG_CODE=$langCode\n");
+            fwrite($envFile, "COUNTRY=$country\n");
+            fwrite($envFile, "CITY=$city\n");
+            fwrite($envFile, "STREET=$street\n");
+            fwrite($envFile, "HOUSE_NUMBER=$houseNumber\n");
+            fwrite($envFile, "PHONE_NO=$phoneno\n");
+            
 
             fclose($envFile);
 

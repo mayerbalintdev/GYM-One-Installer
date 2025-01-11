@@ -146,7 +146,7 @@ $copyrightyear = date("Y");
                             <div class="mb-3">
                                 <label for="phoneno"
                                     class="form-label"><?php echo $translations["fno"]; ?>:</label>
-                                <input type="text" class="form-control" id="houseNumber" name="houseNumber" required>
+                                <input type="text" class="form-control" id="phoneno" name="phoneno" required>
                             </div>
                             <button type="submit"
                                 class="btn btn-primary"><?php echo $translations["continue"]; ?></button>

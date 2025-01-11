@@ -1,189 +1,195 @@
-<!DOCTYPE html>
-<html lang="hu">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fájl Letöltése és Kicsomagolása</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            color: #343a40;
-        }
-        .container {
-            max-width: 600px;
-            margin-top: 100px;
-            padding: 20px;
-            border: 1px solid #ced4da;
-            border-radius: 8px;
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        .progress {
-            height: 25px;
-        }
-        #output {
-            margin-top: 15px;
-            font-size: 1.1em;
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h1 class="text-center mb-4">Fájl Letöltése és Kicsomagolása</h1>
-    <button id="downloadButton" class="btn btn-primary btn-lg btn-block">Letöltés Indítása</button>
-    <div class="progress mt-3" id="progressBar" style="display: none;">
-        <div class="progress-bar" role="progressbar" style="width: 0%;" id="progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-    </div>
-    <div id="output" class="mt-3"></div>
-</div>
-
-<script>
-    document.getElementById('downloadButton').addEventListener('click', function () {
-        this.disabled = true;
-        document.getElementById('progressBar').style.display = 'block';
-        document.getElementById('progress').style.width = '0%';
-        document.getElementById('progress').innerText = '0%';
-
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', window.location.href, true);
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                document.getElementById('output').innerText = xhr.responseText;
-                document.getElementById('progressBar').style.display = 'none';
-                document.getElementById('downloadButton').disabled = false;
-            }
-        };
-
-        xhr.upload.onprogress = function (e) {
-            if (e.lengthComputable) {
-                const percentComplete = (e.loaded / e.total) * 100;
-                document.getElementById('progress').style.width = percentComplete + '%';
-                document.getElementById('progress').innerText = Math.round(percentComplete) + '%';
-            }
-        };
-
-        xhr.send(new FormData());
-    });
-</script>
-
 <?php
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $keepFolder = realpath(__DIR__ . '/../temp');
-    $rootDir = realpath(__DIR__ . '/..');
+$repoOwner = 'mayerbalintdev';
+$repoName = 'GYM-ONE';
+$outputDir = dirname(__DIR__) . '/gym-one-latest';
+$tempZipFile = __DIR__ . '/GYM-One-main.zip';
+$tempDirName = dirname(__DIR__) . '/temp';
 
-    $zipUrl = 'LINK';
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['install'])) {
+    try {
+        $zipUrl = "https://github.com/{$repoOwner}/{$repoName}/archive/refs/heads/main.zip";
+        $ch = curl_init($zipUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'PHP-Script');
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        $zipContent = curl_exec($ch);
 
-    $tempZipPath = $keepFolder . '/release.zip';
-    $zipFileContents = file_get_contents($zipUrl);
+        if (curl_errno($ch)) {
+            throw new Exception('Curl hiba a ZIP fájl letöltésekor: ' . curl_error($ch));
+        }
 
-    if ($zipFileContents === false) {
-        die('Nem sikerült a zip fájlt letölteni.');
-    }
+        curl_close($ch);
 
-    file_put_contents($tempZipPath, $zipFileContents);
+        if ($zipContent === false) {
+            throw new Exception('Nem sikerült letölteni a ZIP fájlt.');
+        }
 
-    $zip = new ZipArchive;
-    if ($zip->open($tempZipPath) === TRUE) {
-        $tempExtractPath = $keepFolder . '/extracted_files';
-        mkdir($tempExtractPath);
-        $zip->extractTo($tempExtractPath);
-        $zip->close();
-        echo 'A legfrissebb release sikeresen letöltve és kicsomagolva a temp/extracted_files mappába.<br>';
+        if (file_put_contents($tempZipFile, $zipContent) === false) {
+            throw new Exception('Nem sikerült menteni a ZIP fájlt.');
+        }
 
-        function deleteDir($dir) {
-            global $keepFolder;
-
-            if (realpath($dir) === $keepFolder) {
-                return;
+        $zip = new ZipArchive();
+        if ($zip->open($tempZipFile) === true) {
+            if (!is_dir($outputDir)) {
+                mkdir($outputDir, 0777, true);
             }
 
-            if (!is_dir($dir)) {
-                return;
+            $firstDir = $zip->getNameIndex(0);
+            if ($firstDir) {
+                $tempExtractDir = $outputDir . '_temp';
+                mkdir($tempExtractDir, 0777, true);
+                $zip->extractTo($tempExtractDir);
+                $zip->close();
+
+                $sourceDir = $tempExtractDir . '/' . trim($firstDir, '/');
+                $files = scandir($sourceDir);
+                foreach ($files as $file) {
+                    if ($file !== '.' && $file !== '..') {
+                        rename($sourceDir . '/' . $file, $outputDir . '/' . $file);
+                    }
+                }
+
+                deleteDirectory($tempExtractDir);
+            } else {
+                throw new Exception('Nem sikerült megállapítani a ZIP fájl elsődleges mappáját.');
             }
 
-            $files = array_diff(scandir($dir), ['.', '..']);
+            echo "A GYM One main ága sikeresen letöltve és kicsomagolva ide: $outputDir\n";
+        } else {
+            throw new Exception('Nem sikerült kicsomagolni a ZIP fájlt.');
+        }
 
-            foreach ($files as $file) {
-                $filePath = "$dir/$file";
+        $parentDir = dirname(__DIR__);
+        $files = scandir($parentDir);
+
+        foreach ($files as $file) {
+            if ($file !== '.' && $file !== '..' && $file !== 'temp' && $file !== 'gym-one-latest') {
+                $filePath = $parentDir . DIRECTORY_SEPARATOR . $file;
+
                 if (is_dir($filePath)) {
-                    deleteDir($filePath);
+                    deleteDirectory($filePath);
                 } else {
                     unlink($filePath);
                 }
             }
-
-            rmdir($dir);
         }
 
-        if (is_dir($rootDir)) {
-            $items = array_diff(scandir($rootDir), ['.', '..', 'temp']);
-            foreach ($items as $item) {
-                $itemPath = "$rootDir/$item";
-                if (is_dir($itemPath)) {
-                    deleteDir($itemPath);
-                } else {
-                    unlink($itemPath);
+        unlink($tempZipFile);
+
+        if (is_dir($tempDirName)) {
+            $tempFiles = scandir($tempDirName);
+            foreach ($tempFiles as $file) {
+                if ($file !== '.' && $file !== '..') {
+                    rename($tempDirName . '/' . $file, $parentDir . '/' . $file);
                 }
             }
+            rmdir($tempDirName);
+            echo "A temp mappa tartalma áthelyezve, és a temp mappa törölve.\n";
+        } else {
+            echo "A temp mappa nem található, nincs mit áthelyezni.\n";
         }
 
-        $files = array_diff(scandir($tempExtractPath), ['.', '..']);
-        foreach ($files as $file) {
-            $source = "$tempExtractPath/$file";
-            $destination = "$rootDir/$file";
-
-            $maxRetries = 5;
-            $retries = 0;
-
-            while (!rename($source, $destination) && $retries < $maxRetries) {
-                $retries++;
-                echo "A fájl használatban van: $file. Újrapróbálkozás ($retries/$maxRetries)...<br>";
-                sleep(2);
+        if (is_dir($outputDir)) {
+            $filesInOutputDir = scandir($outputDir);
+            foreach ($filesInOutputDir as $file) {
+                if ($file !== '.' && $file !== '..') {
+                    rename($outputDir . '/' . $file, $parentDir . '/' . $file);
+                }
             }
-
-            if ($retries === $maxRetries) {
-                echo "Nem sikerült áthelyezni a fájlt: $file.<br>";
-            }
-        }
-
-        $remainingFiles = array_diff(scandir($tempExtractPath), ['.', '..']);
-        if (empty($remainingFiles)) {
-            rmdir($tempExtractPath);
+            rmdir($outputDir);
+            echo "A gym-one-latest mappa tartalma áthelyezve, és a gym-one-latest mappa törölve.\n";
         } else {
-            echo "Nem sikerült törölni a temp/extracted_files mappát, mert nem üres.<br>";
+            echo "A gym-one-latest mappa nem található, nincs mit áthelyezni.\n";
         }
 
-        if (file_exists($tempZipPath)) {
-            unlink($tempZipPath);
-        } else {
-            echo "A zip fájl nem található, ezért nem lehet törölni.<br>";
-        }
+        echo '<script type="text/javascript">
+        // Átirányítjuk a jelenlegi ablakot
+        window.location.href = "../index.php";
 
-        $envFilePath = $keepFolder . '/.env';
-        if (file_exists($envFilePath)) {
-            if (rename($envFilePath, $rootDir . '/.env')) {
-                echo ".env fájl sikeresen áthelyezve.<br>";
-            } else {
-                echo "Nem sikerült áthelyezni a .env fájlt.<br>";
-            }
-        } else {
-            echo ".env fájl nem található a temp mappában.<br>";
-        }
-
-        $remainingTempFiles = array_diff(scandir($keepFolder), ['.', '..']);
-        if (empty($remainingTempFiles)) {
-            rmdir($keepFolder);
-            echo "A temp mappa sikeresen törölve.<br>";
-        } else {
-            echo "A temp mappa nem üres, ezért nem törölhető.<br>";
-        }
-
-        header('Location: ../');
-        exit();
-
-    } else {
-        die('Nem sikerült kicsomagolni a release fájlt.');
+        // Megnyitjuk az új oldalt egy új ablakban
+        window.open("https://gymoneglobal.com", "_blank");
+      </script>';
+        exit;
+    } catch (Exception $e) {
+        echo "Hiba: " . $e->getMessage() . "\n";
     }
 }
+
+/**
+ *
+ * @param string $dir Törlendő mappa útvonala
+ */
+function deleteDirectory($dir)
+{
+    $items = array_diff(scandir($dir), ['.', '..']);
+    foreach ($items as $item) {
+        $itemPath = $dir . DIRECTORY_SEPARATOR . $item;
+        if (is_dir($itemPath)) {
+            deleteDirectory($itemPath);
+        } else {
+            unlink($itemPath);
+        }
+    }
+    rmdir($dir);
+}
 ?>
+
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GYM One Telepítés</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 50px;
+        }
+
+        .install-progress {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-center">GYM One Telepítő</h1>
+        <p class="text-center">Kattints a gombra a telepítés indításához.</p>
+
+        <form method="POST">
+            <button type="submit" name="install" class="btn btn-primary btn-lg w-100">Telepítés indítása</button>
+        </form>
+
+        <div class="install-progress mt-3">
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0;" id="progress-bar"></div>
+            </div>
+            <p id="status-message" class="text-center mt-2">Telepítés folyamatban...</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelector('form').onsubmit = function() {
+            document.querySelector('.install-progress').style.display = 'block';
+
+            let progressBar = document.getElementById('progress-bar');
+            let statusMessage = document.getElementById('status-message');
+            let progress = 0;
+
+            let interval = setInterval(function() {
+                progress += 6;
+                progressBar.style.width = progress + '%';
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    statusMessage.textContent = 'Telepítés befejeződött!';
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+
+</html>
