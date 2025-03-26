@@ -109,44 +109,100 @@ $copyrightyear = date("Y");
                     <?php echo $installer_version; ?>
                 </p>
             </div>
-            <div class="col-md-8 mx-auto text-center mb-5">
+            <div class="col-md-8 mx-auto text-start mb-5">
                 <div class="card">
                     <div class="card-body">
                         <form action="add_to_env.php" method="POST">
-                            <div class="mb-3">
-                                <label for="businessName"
-                                    class="form-label"><?php echo $translations["gym-name"]; ?></label>
-                                <input type="text" class="form-control" id="businessName" name="businessName" required>
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <div class="mb-3">
+                                        <label for="businessName"
+                                            class="form-label"><?php echo $translations["gym-name"]; ?>:</label>
+                                        <input type="text" class="form-control" id="businessName" name="businessName" required>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="mb-3">
+                                        <label for="langCode" class="form-label"><?php echo $translations["lang"]; ?>:</label>
+                                        <select class="form-select" id="langCode" name="langCode" required>
+                                            <?php foreach ($languages as $code): ?>
+                                                <option value="<?php echo $code; ?>"><?php echo $translations["$code"]; ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="langCode" class="form-label"><?php echo $translations["lang"]; ?></label>
-                                <select class="form-select" id="langCode" name="langCode" required>
-                                    <?php foreach ($languages as $code): ?>
-                                        <option value="<?php echo $code; ?>"><?php echo $translations["$code"]; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="mb-3">
+                                        <label for="country" class="form-label"><?php echo $translations["country"]; ?>:</label>
+                                        <input type="text" class="form-control" id="country" name="country" required>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="mb-3">
+                                        <label for="city" class="form-label"><?php echo $translations["city"]; ?>:</label>
+                                        <input type="text" class="form-control" id="city" name="city" required>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="mb-3">
+                                        <label for="street" class="form-label"><?php echo $translations["street"]; ?>:</label>
+                                        <input type="text" class="form-control" id="street" name="street" required>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="country" class="form-label"><?php echo $translations["country"]; ?>:</label>
-                                <input type="text" class="form-control" id="country" name="country" required>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="mb-3">
+                                        <label for="houseNumber"
+                                            class="form-label"><?php echo $translations["hause-no"]; ?>:</label>
+                                        <input type="text" class="form-control" id="houseNumber" name="houseNumber" required>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="mb-3">
+                                        <label for="currency"
+                                            class="form-label"><?php echo $translations["currency"]; ?>:</label>
+                                        <input type="text" class="form-control" id="currency" name="currency" required>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="mb-3">
+                                        <label for="capacity"
+                                            class="form-label"><?php echo $translations["capacityenv"]; ?>:</label><br>
+                                        <input type="number" class="form-control" id="capacity" name="capacity" required>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="city" class="form-label"><?php echo $translations["city"]; ?>:</label>
-                                <input type="text" class="form-control" id="city" name="city" required>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="mb-3">
+                                        <label for="phoneno"
+                                            class="form-label"><?php echo $translations["fno"]; ?>:</label>
+                                        <input type="text" class="form-control" id="phoneno" name="phoneno" required>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="street" class="form-label"><?php echo $translations["street"]; ?>:</label>
-                                <input type="text" class="form-control" id="street" name="street" required>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="mb-3">
+                                        <label for="metakey"
+                                            class="form-label"><?php echo $translations["metakeys"]; ?>:</label><br>
+                                        <input type="text" class="form-control" id="metakey" name="metakey" required>
+                                        <small><code><?php echo $translations["metakeys-separeate"]; ?></code></small>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="houseNumber"
-                                    class="form-label"><?php echo $translations["hause-no"]; ?>:</label>
-                                <input type="text" class="form-control" id="houseNumber" name="houseNumber" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="phoneno"
-                                    class="form-label"><?php echo $translations["fno"]; ?>:</label>
-                                <input type="text" class="form-control" id="phoneno" name="phoneno" required>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="col-sm-12">
+                                        <div class="mb-3">
+                                            <label for="description" class="form-label"><?php echo $translations["websitedescription"]; ?>:</label><br>
+                                            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <button type="submit"
                                 class="btn btn-primary"><?php echo $translations["continue"]; ?></button>
@@ -194,7 +250,7 @@ $copyrightyear = date("Y");
 
             <div class="border-top border-secondary pt-3 mt-3">
                 <p class="small text-center mb-0">
-                    Copyright © <?php echo $copyrightyear;?> GYM One - <?php echo $translations["copyright"]; ?>. &nbsp;<svg
+                    Copyright © <?php echo $copyrightyear; ?> GYM One - <?php echo $translations["copyright"]; ?>. &nbsp;<svg
                         xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-heart-fill" viewBox="0 0 16 16">
                         <path fill-rule="evenodd"

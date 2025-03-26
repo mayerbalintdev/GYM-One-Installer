@@ -45,7 +45,6 @@ $required_extensions = array(
     'exif',
     'mysqli',
     'pdo_mysql',
-    'pdo_sqlite',
     'ftp'
 );
 

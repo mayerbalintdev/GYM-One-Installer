@@ -7,6 +7,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $street = $_POST["street"];
     $houseNumber = $_POST["houseNumber"];
     $phoneno = $_POST["phoneno"];
+    $currency = $_POST["currency"];
+    $metakey = $_POST["metakey"];
+    $description = $_POST["description"];
+    $version = "V1.0.0";
+    $googlekey = "-";
+    $capacity = $_POST["capacity"];
+
 
     if (!empty($businessName) && !empty($langCode) && !empty($country) && !empty($city) && !empty($street) && !empty($houseNumber)) {
         $envFile = fopen("../temp/.env", "a");
@@ -20,6 +27,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             fwrite($envFile, "STREET=$street\n");
             fwrite($envFile, "HOUSE_NUMBER=$houseNumber\n");
             fwrite($envFile, "PHONE_NO=$phoneno\n");
+            fwrite($envFile, "CURRENCY=$currency\n");
+            fwrite($envFile, "META_KEY=$metakey\n");
+            fwrite($envFile, "DESCRIPTION=$description\n");
+            fwrite($envFile, "VERSION=$version\n");
+            fwrite($envFile, "GOOGLE_KEY=$googlekey\n");
+            fwrite($envFile, "CAPACITY=$capacity\n");
+
             
 
             fclose($envFile);
@@ -39,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $logMessage = "[" . date("Y-m-d H:i:s") . "] [STAGE5] ❌ Missing data! Gym name or other required fields are empty.\n";
         file_put_contents("../LOG.log", $logMessage, FILE_APPEND);
 
-        echo "Hiányzó adatok!";
+        echo "Missing data! Gym name or other required fields are empty.";
     }
 }
 ?>

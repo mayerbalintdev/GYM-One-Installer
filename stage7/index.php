@@ -1,11 +1,10 @@
 <?php
-session_start(); // Session kezdése vagy folytatása
+session_start();
 
 // DEF INFO
 $github_url = "https://github.com/mayerbalintdev/";
-$discord_url = "";
-$twitter_url = "";
-$installer_version = "Beta 0.1";
+$discord_url = "https://gymoneglobal.com/discord";
+$installer_version = "V1.0.0";
 
 $langDir = __DIR__ . "/../assets/lang/";
 $langFiles = glob($langDir . "*.json");
@@ -191,9 +190,7 @@ $copyrightyear = date("Y");
                         </li>
                         <li><a href="<?php echo $discord_url; ?>" target="_blank" rel="noopener noreferrer">Discord</a>
                         </li>
-                        <li><a href="<?php echo $twitter_url; ?>" target="_blank" rel="noopener noreferrer">Twitter</a>
-                        </li>
-                        <li><a href="support/"><?php echo $translations["support-us"]; ?></a></li>
+                        <li><a href="https://gymoneglobal.com/support"><?php echo $translations["support-us"]; ?></a></li>
                     </ul>
                 </div>
             </div>
