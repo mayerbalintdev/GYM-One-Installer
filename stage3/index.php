@@ -97,7 +97,7 @@ if (isset($_GET['error'])) {
                             </div>
                             <div class="form-group">
                                 <label for="dbname"><?php echo $translations["db-name"]; ?></label>
-                                <input type="text" class="form-control" id="dbname" name="dbname" required>
+                                <input type="text" class="form-control" id="dbname" name="dbname" value="gymone" readonly required>
                             </div>
                             <div class="mt-3"></div>
                             <button type="submit"
@@ -145,7 +145,7 @@ if (isset($_GET['error'])) {
 
             <div class="border-top border-secondary pt-3 mt-3">
                 <p class="small text-center mb-0">
-                    Copyright © <?php echo $copyrightyear;?> GYM One - <?php echo $translations["copyright"]; ?>. &nbsp;<svg
+                    Copyright © <?php echo $copyrightyear; ?> GYM One - <?php echo $translations["copyright"]; ?>. &nbsp;<svg
                         xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-heart-fill" viewBox="0 0 16 16">
                         <path fill-rule="evenodd"

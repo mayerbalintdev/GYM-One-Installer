@@ -4,7 +4,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $servername = $_POST["servername"];
         $username = $_POST["username"];
         $password = $_POST["password"];
-        $dbname = $_POST["dbname"];
+        $dbname = "gymone";
 
         $log_file = "../LOG.log";
 

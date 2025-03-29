@@ -43,7 +43,7 @@ $current_php_version = phpversion();
 <?php
 function check_database_connection($host, $username, $password, $database)
 {
-    $conn = new mysqli($host, $username, $password, $database);
+    $conn = new mysqli($host, $username, $password);
     if ($conn->connect_error) {
         return false;
     } else {

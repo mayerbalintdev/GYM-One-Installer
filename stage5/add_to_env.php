@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             fwrite($envFile, "CURRENCY=$currency\n");
             fwrite($envFile, "META_KEY=$metakey\n");
             fwrite($envFile, "DESCRIPTION=$description\n");
-            fwrite($envFile, "VERSION=$version\n");
+            fwrite($envFile, "APP_VERSION=$version\n");
             fwrite($envFile, "GOOGLE_KEY=$googlekey\n");
             fwrite($envFile, "CAPACITY=$capacity\n");
             fwrite($envFile, "ABOUT=Example text\n");
