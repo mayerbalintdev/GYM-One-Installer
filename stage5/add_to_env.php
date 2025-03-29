@@ -33,6 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             fwrite($envFile, "VERSION=$version\n");
             fwrite($envFile, "GOOGLE_KEY=$googlekey\n");
             fwrite($envFile, "CAPACITY=$capacity\n");
+            fwrite($envFile, "ABOUT=Example text\n");
 
             
 

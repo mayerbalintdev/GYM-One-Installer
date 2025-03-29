@@ -194,10 +194,10 @@ function deleteDirectory($dir)
             <div class="col-md-8 mx-auto text-center mb-5">
                 <div class="card">
                     <div class="card-body">
-                        <p class="text-center">Kattints a gombra a telepítés indításához.</p>
+                        <p class="text-center"><?php echo $translations["click-toinstall"];?></p>
 
                         <form method="POST">
-                            <button type="submit" name="install" class="btn disabled btn-primary btn-lg w-100">Telepítés indítása</button>
+                            <button type="submit" name="install" class="btn btn-primary btn-lg w-100"><?php echo $translations["installbtnlastone"];?></button>
                         </form>
 
                         <div class="install-progress mt-3">

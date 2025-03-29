@@ -1,10 +1,3 @@
--- --------------------------------------------------------
--- Hoszt:                        localhost
--- Szerver verzió:               10.4.32-MariaDB - mariadb.org binary distribution
--- Szerver OS:                   Win64
--- HeidiSQL Verzió:              12.8.0.6908
--- --------------------------------------------------------
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
 /*!50503 SET NAMES utf8mb4 */;
@@ -14,7 +7,9 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
--- Struktúra mentése tábla gymone. current_tickets
+CREATE DATABASE IF NOT EXISTS `gymone` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
+USE `gymone`;
+
 CREATE TABLE IF NOT EXISTS `current_tickets` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userid` bigint(20) NOT NULL DEFAULT 0,
@@ -23,11 +18,8 @@ CREATE TABLE IF NOT EXISTS `current_tickets` (
   `expiredate` date NOT NULL,
   `opportunities` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
--- Az adatok exportálása nem lett kiválasztva.
-
--- Struktúra mentése tábla gymone. invoices
 CREATE TABLE IF NOT EXISTS `invoices` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userid` bigint(20) NOT NULL DEFAULT 0,
@@ -37,22 +29,16 @@ CREATE TABLE IF NOT EXISTS `invoices` (
   `route` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
--- Az adatok exportálása nem lett kiválasztva.
-
--- Struktúra mentése tábla gymone. lockers
 CREATE TABLE IF NOT EXISTS `lockers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `lockernum` int(11) NOT NULL,
   `gender` enum('Male','Female') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `user_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
--- Az adatok exportálása nem lett kiválasztva.
-
--- Struktúra mentése tábla gymone. logs
 CREATE TABLE IF NOT EXISTS `logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userid` bigint(20) DEFAULT NULL,
@@ -60,11 +46,8 @@ CREATE TABLE IF NOT EXISTS `logs` (
   `actioncolor` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'info',
   `time` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
--- Az adatok exportálása nem lett kiválasztva.
-
--- Struktúra mentése tábla gymone. opening_hours
 CREATE TABLE IF NOT EXISTS `opening_hours` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `day` int(11) NOT NULL,
@@ -72,33 +55,45 @@ CREATE TABLE IF NOT EXISTS `opening_hours` (
   `close_time` time DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `day` (`day`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Az adatok exportálása nem lett kiválasztva.
+CREATE TABLE IF NOT EXISTS `products` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `stock` int(11) NOT NULL,
+  `barcode` varchar(128) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `barcode` (`barcode`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Struktúra mentése tábla gymone. revenu_stats
 CREATE TABLE IF NOT EXISTS `revenu_stats` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `date` date NOT NULL,
-  `bank_card` decimal(10,2) NOT NULL DEFAULT 0.00,
-  `cash` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `bank_card` decimal(10,2) DEFAULT 0.00,
+  `cash` decimal(10,2) DEFAULT 0.00,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Az adatok exportálása nem lett kiválasztva.
+CREATE TABLE IF NOT EXISTS `temp_cart` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Struktúra mentése tábla gymone. temp_dailyworkout
 CREATE TABLE IF NOT EXISTS `temp_dailyworkout` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `start_time` time NOT NULL,
   `end_time` time NOT NULL,
   `number_of_people` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
--- Az adatok exportálása nem lett kiválasztva.
-
--- Struktúra mentése tábla gymone. temp_loggeduser
 CREATE TABLE IF NOT EXISTS `temp_loggeduser` (
   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `userid` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -106,9 +101,6 @@ CREATE TABLE IF NOT EXISTS `temp_loggeduser` (
   `lockerid` int(20) unsigned DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
--- Az adatok exportálása nem lett kiválasztva.
-
--- Struktúra mentése tábla gymone. tickets
 CREATE TABLE IF NOT EXISTS `tickets` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -116,11 +108,8 @@ CREATE TABLE IF NOT EXISTS `tickets` (
   `price` decimal(10,2) NOT NULL,
   `occasions` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=121 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
--- Az adatok exportálása nem lett kiválasztva.
-
--- Struktúra mentése tábla gymone. timetable
 CREATE TABLE IF NOT EXISTS `timetable` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `event_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -130,11 +119,8 @@ CREATE TABLE IF NOT EXISTS `timetable` (
   `color` varchar(7) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `day_of_week` (`day_of_week`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
--- Az adatok exportálása nem lett kiválasztva.
-
--- Struktúra mentése tábla gymone. trainers
 CREATE TABLE IF NOT EXISTS `trainers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -144,11 +130,8 @@ CREATE TABLE IF NOT EXISTS `trainers` (
   `price_10sessions` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
--- Az adatok exportálása nem lett kiválasztva.
-
--- Struktúra mentése tábla gymone. users
 CREATE TABLE IF NOT EXISTS `users` (
   `userid` int(10) unsigned NOT NULL,
   `firstname` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -164,13 +147,11 @@ CREATE TABLE IF NOT EXISTS `users` (
   `confirmed` enum('Yes','No') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `lastlogin` datetime DEFAULT NULL,
   `lastip` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `profile_balance` decimal(10,2) NOT NULL DEFAULT 0.00,
   PRIMARY KEY (`userid`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
--- Az adatok exportálása nem lett kiválasztva.
-
--- Struktúra mentése tábla gymone. workers
 CREATE TABLE IF NOT EXISTS `workers` (
   `userid` bigint(20) NOT NULL,
   `firstname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -182,18 +163,22 @@ CREATE TABLE IF NOT EXISTS `workers` (
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
--- Az adatok exportálása nem lett kiválasztva.
-
--- Struktúra mentése tábla gymone. workout_stats
 CREATE TABLE IF NOT EXISTS `workout_stats` (
   `workout_id` int(11) NOT NULL AUTO_INCREMENT,
   `userid` bigint(20) NOT NULL DEFAULT 0,
   `duration` int(11) DEFAULT NULL,
   `workout_date` date DEFAULT NULL,
   PRIMARY KEY (`workout_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Az adatok exportálása nem lett kiválasztva.
+INSERT INTO `opening_hours` (`id`, `day`, `open_time`, `close_time`) VALUES
+	(1, 1, NULL, NULL),
+	(2, 2, NULL, NULL),
+	(3, 3, NULL, NULL),
+	(4, 4, NULL, NULL),
+	(5, 5, NULL, NULL),
+	(6, 6, NULL, NULL),
+	(7, 7, NULL, NULL);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
