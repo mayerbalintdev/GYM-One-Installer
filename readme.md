@@ -1,4 +1,4 @@
-# GYM One - Installer - V1.0.0
+# GYM One - Installer - V1.1.0
 
 <p align="center"><img src="https://gymoneglobal.com/assets/img/text-color-logo.png" alt="project-image"></p>
 
@@ -44,7 +44,7 @@ The GYM One installer automatically configures and installs the necessary settin
 
 If you have any questions or encounter issues during the installation, please feel free to contact us at one of the following:
 
-- Email: support@gymoneglobal.com
+- Email: center@gymoneglobal.com
 - Website: [https://gymoneglobal.com](https://gymoneglobal.com)
 
 Thank you for choosing GYM One!

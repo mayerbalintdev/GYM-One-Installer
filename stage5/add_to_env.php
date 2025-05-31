@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $currency = $_POST["currency"];
     $metakey = $_POST["metakey"];
     $description = $_POST["description"];
-    $version = "V1.0.0";
+    $version = "V1.1.0";
     $googlekey = "-";
     $capacity = $_POST["capacity"];
 
