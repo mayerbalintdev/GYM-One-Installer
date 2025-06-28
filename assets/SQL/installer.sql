@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS `trainers` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 CREATE TABLE IF NOT EXISTS `users` (
-  `userid` int(10) unsigned NOT NULL,
+  `userid` bigint(20) unsigned NOT NULL,
   `firstname` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `lastname` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,

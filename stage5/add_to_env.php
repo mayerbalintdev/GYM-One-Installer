@@ -10,9 +10,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $currency = $_POST["currency"];
     $metakey = $_POST["metakey"];
     $description = $_POST["description"];
-    $version = "V1.1.0";
+    $version = "V1.1.1";
     $googlekey = "-";
     $capacity = $_POST["capacity"];
+    $autoaccept = FALSE;
 
 
     if (!empty($businessName) && !empty($langCode) && !empty($country) && !empty($city) && !empty($street) && !empty($houseNumber)) {
@@ -34,6 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             fwrite($envFile, "GOOGLE_KEY=$googlekey\n");
             fwrite($envFile, "CAPACITY=$capacity\n");
             fwrite($envFile, "ABOUT=Example text\n");
+            fwrite($envFile, "AUTOACCEPT=$autoaccept\n");
 
             
 

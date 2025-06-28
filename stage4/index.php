@@ -4,7 +4,7 @@ session_start(); // Session kezdése vagy folytatása
 // DEF INFO
 $github_url = "https://github.com/mayerbalintdev/";
 $discord_url = "https://gymoneglobal.com/discord";
-$installer_version = "V1.1.0";
+$installer_version = "V1.1.1";
 
 $langDir = __DIR__ . "/../assets/lang/";
 $langFiles = glob($langDir . "*.json");
@@ -172,9 +172,9 @@ if ($database_connected) {
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <?php echo $extension; ?> - <?php echo $translations["extension"]; ?>
                                     <?php if (in_array($extension, $enabled_extensions)): ?>
-                                        <span class="badge bg-success"><i class="bi bi-check"></i></span> <!-- pipa -->
+                                        <span class="badge bg-success"><i class="bi bi-check"></i></span>
                                     <?php else: ?>
-                                        <span class="badge bg-danger"><i class="bi bi-x"></i></span> <!-- piros X -->
+                                        <span class="badge bg-danger"><i class="bi bi-x"></i></span>
                                     <?php endif; ?>
                                 </li>
                             <?php endforeach; ?>

@@ -1,4 +1,4 @@
-# GYM One - Installer - V1.1.0
+# GYM One - Installer - V1.1.1
 
 <p align="center"><img src="https://gymoneglobal.com/assets/img/text-color-logo.png" alt="project-image"></p>
 
