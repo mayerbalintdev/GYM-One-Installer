@@ -1,4 +1,4 @@
-# GYM One - Installer - V1.1.1
+# GYM One - Installer - V1.2.0
 
 <p align="center"><img src="https://gymoneglobal.com/assets/img/text-color-logo.png" alt="project-image"></p>
 
@@ -46,5 +46,8 @@ If you have any questions or encounter issues during the installation, please fe
 
 - Email: center@gymoneglobal.com
 - Website: [https://gymoneglobal.com](https://gymoneglobal.com)
+
+Press inquiries can be sent to the following email address:
+- Email: press@gymoneglobal.com
 
 Thank you for choosing GYM One!

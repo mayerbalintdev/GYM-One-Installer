@@ -1,10 +1,10 @@
 <?php
-session_start(); // Session kezdése vagy folytatása
+session_start();
 
 // DEF INFO
 $github_url = "https://github.com/mayerbalintdev/";
 $discord_url = "https://gymoneglobal.com/discord";
-$installer_version = "V1.1.1";
+$installer_version = "V1.2.0";
 
 $langDir = __DIR__ . "/../assets/lang/";
 $langFiles = glob($langDir . "*.json");
@@ -29,7 +29,6 @@ if (file_exists($langFile)) {
 }
 
 $copyrightyear = date("Y");
-
 
 $error_message = '';
 if (isset($_GET['error'])) {
@@ -97,7 +96,7 @@ if (isset($_GET['error'])) {
                             </div>
                             <div class="form-group">
                                 <label for="dbname"><?php echo $translations["db-name"]; ?></label>
-                                <input type="text" class="form-control" id="dbname" name="dbname" value="gymone" readonly required>
+                                <input type="text" class="form-control" id="dbname" name="dbname"required>
                             </div>
                             <div class="mt-3"></div>
                             <button type="submit"

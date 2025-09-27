@@ -45,7 +45,7 @@ logServerData();
 // DEF INFO
 $github_url = "https://github.com/mayerbalintdev/GYM-One";
 $discord_url = "https://gymoneglobal.com/discord";
-$installer_version = "V1.1.1";
+$installer_version = "V1.2.0";
 
 $langDir = __DIR__ . "/assets/lang/";
 $langFiles = glob($langDir . "*.json");
