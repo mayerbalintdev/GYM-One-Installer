@@ -4,7 +4,7 @@ session_start();
 // DEF INFO
 $github_url = "https://github.com/mayerbalintdev/";
 $discord_url = "https://gymoneglobal.com/discord";
-$installer_version = "V1.2.0";
+$installer_version = "V1.2.1";
 
 $langDir = __DIR__ . "/../assets/lang/";
 $langFiles = glob($langDir . "*.json");
@@ -274,6 +274,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['install'])) {
                                 statusMessage.classList.add('text-success');
                                 continueButton.style.display = 'inline-block';
                                 continueButton.classList.add('active');
+                                window.location.href = "../stage7/";
                             } else {
                                 statusMessage.textContent = '<?php echo $translations["unexpected-error"]; ?> ' + data.message;
                                 statusMessage.classList.add('text-danger');
@@ -286,6 +287,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['install'])) {
                             statusMessage.classList.add('text-danger');
                             progressBar.classList.remove('bg-success');
                             progressBar.classList.add('bg-danger');
+                            window.location.href = "../stage7/";
+
                         });
                 }
             }, 2500);

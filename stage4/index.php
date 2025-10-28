@@ -4,7 +4,7 @@ session_start(); // Session kezdése vagy folytatása
 // DEF INFO
 $github_url = "https://github.com/mayerbalintdev/";
 $discord_url = "https://gymoneglobal.com/discord";
-$installer_version = "V1.2.0";
+$installer_version = "V1.2.1";
 
 $langDir = __DIR__ . "/../assets/lang/";
 $langFiles = glob($langDir . "*.json");
@@ -35,7 +35,6 @@ $required_extensions = array(
     'readline',
     'mysqlnd',
     'bz2',
-    'apache2handler',
     'openssl',
     'curl',
     'fileinfo',

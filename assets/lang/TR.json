@@ -115,7 +115,7 @@
     "trainersclass": "Kişisel Antrenörler & Dersler",
     "oneclick_install": "Web sitesini tek tıkla kurabilirsiniz.",
     "info-one": "Spor salonu üyelerini yönetmenin ne kadar kolay olabileceğini hiç düşündün mü?",
-    "info-two": "GYM One tüm bu sorunlara çözüm sunuyor, hem de <strong>%100 ücretsiz</strong>!",
+    "info-two": "GYM One tüm bunlara bir çözüm sunuyor ve üstelik <strong>%100 ücretsiz</strong>!",
     "one-benefit": "Web yazılımının ücretsiz olması, fitness kulüplerinin giriş yönetimi ve üye takibini maliyet etkin bir şekilde yönetmesine olanak tanır.",
     "two-benefit": "Açık kaynak yapısı sayesinde GYM One sürekli geliştirilmektedir ve kullanıcıların ihtiyaçlarına göre özelleştirme ve genişletme imkanı sunar.",
     "three-benefit": "Çoklu dil desteği, fitness kulüplerinin küresel müşterilerle çalışmasını sağlayarak potansiyel pazarı genişletir.",
@@ -531,6 +531,11 @@
     "traineredit": "Antrenör bilgilerini güncelle",
     "userinfo": "Kullanıcı bilgileri",
     "welcome": "Tekrar hoş geldin!",
+    "secure_adminlogin_desc": "Güvenlik Uyarısı",
+    "loginlikeadmin": "{gym_name} yönetim paneline erişmek için giriş bilgilerinizi girin.",
+    "password_placeholder": "Şifrenizi girin",
+    "username_placeholder": "Kullanıcı adınızı girin",
+    "secure_adminlogin_desc_1": "Bu giriş arayüzü yalnızca çalışanlar için erişilebilirdir. <br> Tüm giriş denemeleri kaydedilir.",
     "morninghello": "Günaydın",
     "dayhello": "İyi günler",
     "nighthello": "İyi akşamlar",
@@ -564,6 +569,9 @@
     "expireemailconsequence_two": "Spor salonuna giriş",
     "yes": "Evet",
     "no": "Hayır",
+    "loginusermanagger": "Üye Yönetimi",
+    "loginuserpassmanagger": "Abonelik Yönetimi",
+    "loginusersecured": "Güvenli",
     "forceregconf": "Anında onay",
     "lastip": "Son giriş yapılan IP adresi",
     "identifier": "Kimlik:",
@@ -643,5 +651,6 @@
     "gwalletinfobox": "Kartın düzenleyicisi GYM One'dır, ancak karttan GYM One sorumlu değildir. Kartı spor salonuna giriş ve indirimlerden yararlanmak için kullanabilirsin.",
     "gwalletmotivation": "Motivasyon",
     "gwalletmotivation_value": "Unutma: gelişim, düzenli olmaya bağlıdır! Antrenman yap, su iç ve yeterince dinlen!",
-    "sql-success": "Veritabanı başarıyla kuruldu"
+    "sql-success": "Veritabanı başarıyla kuruldu",
+    "adminlogin": "Yönetici Girişi"
 }

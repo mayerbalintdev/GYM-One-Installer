@@ -531,6 +531,11 @@
     "traineredit": "Edző adatainak módosítása",
     "userinfo": "Felhasználó információi",
     "welcome": "Üdv újra!",
+    "secure_adminlogin_desc": "Biztonsági Megjegyzés",
+    "loginlikeadmin": "Add meg a bejelentkezési adataid, hogy hozzáférj a {gym_name} admin felületéhez.",
+    "password_placeholder": "Add meg a jelszavadat",
+    "username_placeholder": "Add meg a felhasználónevedet",
+    "secure_adminlogin_desc_1": "Ez a beléptető felület kizárólag munkatársak számára elérhető. <br> Minden bejelentkezési kísérlet naplózásra kerül.",
     "morninghello": "Jó reggelt",
     "dayhello": "Jó napot",
     "nighthello": "Jó estét",
@@ -564,6 +569,9 @@
     "expireemailconsequence_two": "Nem tudsz belépni a terembe",
     "yes": "Igen",
     "no": "Nem",
+    "loginusermanagger": "Tagkezelés",
+    "loginuserpassmanagger": "Bérletkezelés",
+    "loginusersecured": "Biztonságos",
     "forceregconf": "Azonnali jóváhagyás",
     "lastip": "Legutoljára belépett IP",
     "identifier": "Azonosító:",
@@ -643,5 +651,6 @@
     "gwalletinfobox": "A kártya kiállítója a GYM One, azonban nem a GYM One felelős érte. Használd a kártyát edzőtermi belépéshez és kedvezmények igénybevételéhez.",
     "gwalletmotivation": "Motiváció",
     "gwalletmotivation_value": "Ne feledd: a fejlődés a rendszerességen múlik! Eddz, hidratálj és pihenj eleget!",
-    "sql-success": "Sikeres adatbázis telepítés"
+    "sql-success": "Sikeres adatbázis telepítés",
+    "adminlogin": "Admin Belépés"
 }

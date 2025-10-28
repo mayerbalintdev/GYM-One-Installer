@@ -531,6 +531,11 @@
     "traineredit": "Change trainer details",
     "userinfo": "User information",
     "welcome": "Welcome again!",
+    "secure_adminlogin_desc": "Security Notice",
+    "loginlikeadmin": "Enter your login credentials to access the {gym_name} admin panel.",
+    "password_placeholder": "Enter your password",
+    "username_placeholder": "Enter your username",
+    "secure_adminlogin_desc_1": "This login interface is for staff members only. <br> All login attempts are logged.",
     "morninghello": "Good Morning",
     "dayhello": "Good afternoon",
     "nighthello": "Good evening\n",
@@ -564,6 +569,9 @@
     "expireemailconsequence_two": "Access to the gym",
     "yes": "Yes",
     "no": "No",
+    "loginusermanagger": "Member Management",
+    "loginuserpassmanagger": "Membership Management",
+    "loginusersecured": "Secure",
     "forceregconf": "Instant approval",
     "lastip": "Last entered IP",
     "identifier": "Your ID:",
@@ -643,5 +651,6 @@
     "gwalletinfobox": "The card issuer is GYM One, but GYM One is not responsible for it. Use the card to access the gym and take advantage of discounts.",
     "gwalletmotivation": "Motivation",
     "gwalletmotivation_value": "Remember: progress depends on consistency! Train, hydrate, and rest enough!",
-    "sql-success": "Successful database installation"
+    "sql-success": "Successful database installation",
+    "adminlogin": "Admin Login"
 }

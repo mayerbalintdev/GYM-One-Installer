@@ -531,6 +531,11 @@
     "traineredit": "Modificar información del entrenador",
     "userinfo": "Información del usuario",
     "welcome": "¡Bienvenido de nuevo!",
+    "secure_adminlogin_desc": "Aviso de Seguridad",
+    "loginlikeadmin": "Introduce tus credenciales para acceder al panel de administración de {gym_name}.",
+    "password_placeholder": "Introduce tu contraseña",
+    "username_placeholder": "Introduce tu nombre de usuario",
+    "secure_adminlogin_desc_1": "Esta interfaz de inicio de sesión está disponible únicamente para el personal. <br> Todos los intentos de inicio de sesión se registran.",
     "morninghello": "Buenos días",
     "dayhello": "Buenas tardes",
     "nighthello": "Buenas noches",
@@ -564,6 +569,9 @@
     "expireemailconsequence_two": "Acceso al gimnasio",
     "yes": "Si",
     "no": "No",
+    "loginusermanagger": "Gestión de Miembros",
+    "loginuserpassmanagger": "Gestión de Membresías",
+    "loginusersecured": "Seguro",
     "forceregconf": "Aprobación inmediata",
     "lastip": "Última IP utilizada",
     "identifier": "ID",
@@ -643,5 +651,6 @@
     "gwalletinfobox": "La tarjeta es emitida por GYM One, pero GYM One no se hace responsable de ella. Úsala para acceder al gimnasio y para aprovechar descuentos.",
     "gwalletmotivation": "Motivación",
     "gwalletmotivation_value": "Recuerda: ¡el progreso depende de la constancia! ¡Entrena, hidrátate y descansa lo suficiente!",
-    "sql-success": "Instalación de base de datos exitosa"
+    "sql-success": "Instalación de base de datos exitosa",
+    "adminlogin": "Inicio de Sesión de Admin"
 }
