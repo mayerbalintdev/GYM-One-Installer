@@ -6,7 +6,20 @@ body {
     background: linear-gradient(90deg, rgba(9, 80, 220, 1) 0%, rgba(9, 88, 210, 1) 50%, rgba(9, 110, 210, 1) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#0950dc", endColorstr="#096ed2", GradientType=1);
     color: #fff !important;
+
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
+
+body > .mt-5:first-child + .container {
+    flex: 1;
+}
+
+body > .container {
+    flex: 1;
+}
+
 #animated-text {
     transition: opacity 1s;
     opacity: 0;
@@ -14,33 +27,46 @@ body {
     font-weight: 700;
 }
 
-h1{
+h1 {
     font-size: 70px;
     font-weight: 700;
 }
 
-.footer{
+.footer {
     background-color: #252525;
+    margin-top: auto;
 }
 
-.svg,.bi{
+.footer-waves {
+    margin-top: auto;
+    display: block;
+    line-height: 0;
+    background: transparent;
+}
+
+.footer-waves svg {
+    display: block;
+    width: 100%;
+}
+
+.svg, .bi {
     height: 1em;
     width: 1em;
     vertical-align: -0.125em;
 }
 
 .custom-checkbox {
-  width: 20px;
-  height: 20px;
-  border: 2px solid #333;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #333;
 }
 
 .custom-checkbox:hover {
-  border-color: #0d6efd;
-  box-shadow: 0 0 5px rgba(13, 110, 253, 0.5);
+    border-color: #0d6efd;
+    box-shadow: 0 0 5px rgba(13, 110, 253, 0.5);
 }
 
 .custom-checkbox:checked {
-  background-color: #0d6efd;
-  border-color: #0d6efd;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
 }

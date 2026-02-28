@@ -1,267 +1,277 @@
 <?php
+// ============================================================
+//  GYM One Installer – Utolsó lépés: fájlok telepítése
+// ============================================================
+ob_start();
 session_start();
 
-// DEF INFO
-$github_url = "https://github.com/mayerbalintdev/";
-$discord_url = "https://gymoneglobal.com/discord";
-$installer_version = "V1.2.0";
+require_once __DIR__ . '/../helpers.php';
 
-$langDir = __DIR__ . "/../assets/lang/";
-$langFiles = glob($langDir . "*.json");
-$languages = [];
+$langData     = loadTranslations();
+$lang         = $langData['lang'];
+$languages    = $langData['languages'];
+$translations = $langData['translations'];
+$assetBase    = '../';
 
-foreach ($langFiles as $file) {
-    $code = strtoupper(pathinfo($file, PATHINFO_FILENAME));
-    $languages[$code] = $code;
-}
+// ------------------------------------------------------------
+// AJAX POST: telepítés végrehajtása lépésenkénti SSE-vel
+// A böngésző Server-Sent Events segítségével valós idejű
+// visszajelzést kap – nem kell fehér oldalt nézni percekig.
+// ------------------------------------------------------------
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['install'])) {
+    ob_end_clean();
+    header('Content-Type: text/event-stream');
+    header('Cache-Control: no-cache');
+    header('X-Accel-Buffering: no'); // Nginx puffer kikapcsolás
 
-if (isset($_GET['lang']) && file_exists($langDir . "{$_GET['lang']}.json")) {
-    $_SESSION['lang'] = $_GET['lang'];
-}
+    // Flush segédfüggvény
+    function sendEvent(string $type, string $message, int $progress = 0): void {
+        $data = json_encode(['type' => $type, 'message' => $message, 'progress' => $progress]);
+        echo "data: {$data}\n\n";
+        if (ob_get_level() > 0) ob_flush();
+        flush();
+    }
 
-$lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'GB';
-$langFile = $langDir . "$lang.json";
+    set_time_limit(300);
 
-$copyrightyear = date("Y");
+    $repoOwner      = 'mayerbalintdev';
+    $repoName       = 'GYM-ONE';
+    $parentDir      = dirname(__DIR__);
+    $tempZipFile    = TEMP_DIR . 'GYM-One-main.zip';
+    $outputDir      = TEMP_DIR . 'gym-one-latest';
+    $tempExtractDir = TEMP_DIR . 'gym-one-extract';
+    $tempDir        = $parentDir . '/temp';
 
-if (file_exists($langFile)) {
-    $translations = json_decode(file_get_contents($langFile), true);
-} else {
-    die("A nyelvi fájl nem található: $langFile");
-}
-
-?>
-
-<?php
-$repoOwner = 'mayerbalintdev';
-$repoName = 'GYM-ONE';
-$outputDir = dirname(__DIR__) . '/gym-one-latest';
-$tempZipFile = __DIR__ . '/GYM-One-main.zip';
-$tempDirName = dirname(__DIR__) . '/temp';
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['install'])) {
     try {
+        // 1. ZIP letöltés
+        sendEvent('progress', $translations['install-downloading'] ?? 'Downloading GYM One...', 10);
+
         $zipUrl = "https://github.com/{$repoOwner}/{$repoName}/archive/refs/heads/main.zip";
         $ch = curl_init($zipUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'PHP-Script');
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_USERAGENT      => 'GYMOne-Installer/1.0',
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_TIMEOUT        => 120,
+            CURLOPT_SSL_VERIFYPEER => true,
+        ]);
         $zipContent = curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            throw new Exception('Curl hiba a ZIP fájl letöltésekor: ' . curl_error($ch));
-        }
-
+        $curlError  = curl_error($ch);
+        $httpCode   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        if ($zipContent === false) {
-            throw new Exception('Nem sikerült letölteni a ZIP fájlt.');
+        if ($zipContent === false || $curlError) {
+            throw new Exception('Download failed: ' . $curlError);
+        }
+        if ($httpCode !== 200) {
+            throw new Exception("GitHub returned HTTP {$httpCode}");
         }
 
+        // 2. ZIP mentése temp/-be (írható)
+        sendEvent('progress', $translations['install-saving'] ?? 'Saving archive...', 25);
         if (file_put_contents($tempZipFile, $zipContent) === false) {
-            throw new Exception('Nem sikerült menteni a ZIP fájlt.');
+            throw new Exception('Failed to save ZIP file to: ' . $tempZipFile);
+        }
+        unset($zipContent);
+
+        // 3. Kicsomagolás – shell unzip paranccsal, PHP ZipArchive fallback
+        sendEvent('progress', $translations['install-extracting'] ?? 'Extracting files...', 40);
+
+        if (!is_dir($tempExtractDir)) {
+            mkdir($tempExtractDir, 0755, true);
         }
 
-        $zip = new ZipArchive();
-        if ($zip->open($tempZipFile) === true) {
-            if (!is_dir($outputDir)) {
-                mkdir($outputDir, 0777, true);
+        exec('which unzip 2>/dev/null', $whichOut, $whichCode);
+        if ($whichCode === 0) {
+            $cmd = 'unzip -q ' . escapeshellarg($tempZipFile) . ' -d ' . escapeshellarg($tempExtractDir) . ' 2>&1';
+            exec($cmd, $unzipOut, $unzipCode);
+            if ($unzipCode !== 0) {
+                throw new Exception('unzip failed: ' . implode(' ', $unzipOut));
             }
-
-            $firstDir = $zip->getNameIndex(0);
-            if ($firstDir) {
-                $tempExtractDir = $outputDir . '_temp';
-                mkdir($tempExtractDir, 0777, true);
-                $zip->extractTo($tempExtractDir);
-                $zip->close();
-
-                $sourceDir = $tempExtractDir . '/' . trim($firstDir, '/');
-                $files = scandir($sourceDir);
-                foreach ($files as $file) {
-                    if ($file !== '.' && $file !== '..') {
-                        rename($sourceDir . '/' . $file, $outputDir . '/' . $file);
-                    }
-                }
-
-                deleteDirectory($tempExtractDir);
-            } else {
-                throw new Exception('Nem sikerült megállapítani a ZIP fájl elsődleges mappáját.');
-            }
-
-            echo "A GYM One main ága sikeresen letöltve és kicsomagolva ide: $outputDir\n";
         } else {
-            throw new Exception('Nem sikerült kicsomagolni a ZIP fájlt.');
+            $zip = new ZipArchive();
+            if ($zip->open($tempZipFile) !== true) {
+                throw new Exception('Failed to open ZIP archive. Size: ' . filesize($tempZipFile) . ' bytes');
+            }
+            $zip->extractTo($tempExtractDir);
+            $zip->close();
         }
 
-        $parentDir = dirname(__DIR__);
-        $files = scandir($parentDir);
+        sendEvent('progress', $translations['install-extracting'] ?? 'Extracting files...', 55);
 
-        foreach ($files as $file) {
-            if ($file !== '.' && $file !== '..' && $file !== 'temp' && $file !== 'gym-one-latest') {
-                $filePath = $parentDir . DIRECTORY_SEPARATOR . $file;
-
-                if (is_dir($filePath)) {
-                    deleteDirectory($filePath);
-                } else {
-                    unlink($filePath);
-                }
+        // Az első almappát keressük meg (pl. GYM-ONE-main)
+        $extracted = array_diff(scandir($tempExtractDir), ['.', '..']);
+        $sourceDir = null;
+        foreach ($extracted as $item) {
+            if (is_dir($tempExtractDir . '/' . $item)) {
+                $sourceDir = $tempExtractDir . '/' . $item;
+                break;
             }
         }
 
-        unlink($tempZipFile);
-
-        if (is_dir($tempDirName)) {
-            $tempFiles = scandir($tempDirName);
-            foreach ($tempFiles as $file) {
-                if ($file !== '.' && $file !== '..') {
-                    rename($tempDirName . '/' . $file, $parentDir . '/' . $file);
-                }
-            }
-            rmdir($tempDirName);
-            echo "A temp mappa tartalma áthelyezve, és a temp mappa törölve.\n";
-        } else {
-            echo "A temp mappa nem található, nincs mit áthelyezni.\n";
+        if (!$sourceDir || !is_dir($sourceDir)) {
+            throw new Exception('Could not locate extracted directory. Found: ' . implode(', ', $extracted));
         }
 
-        if (is_dir($outputDir)) {
-            $filesInOutputDir = scandir($outputDir);
-            foreach ($filesInOutputDir as $file) {
-                if ($file !== '.' && $file !== '..') {
-                    rename($outputDir . '/' . $file, $parentDir . '/' . $file);
-                }
-            }
-            rmdir($outputDir);
-            echo "A gym-one-latest mappa tartalma áthelyezve, és a gym-one-latest mappa törölve.\n";
-        } else {
-            echo "A gym-one-latest mappa nem található, nincs mit áthelyezni.\n";
+        // sourceDir → outputDir mozgatás (exec mv – cross-partition safe)
+        if (!is_dir($outputDir)) {
+            mkdir($outputDir, 0777, true);
+        }
+        exec('mv ' . escapeshellarg($sourceDir) . '/* ' . escapeshellarg($outputDir) . '/ 2>&1');
+        exec('mv ' . escapeshellarg($sourceDir) . '/.[!.]* ' . escapeshellarg($outputDir) . '/ 2>/dev/null');
+        exec('rm -rf ' . escapeshellarg($tempExtractDir));
+        exec('rm -f ' . escapeshellarg($tempZipFile));
+
+        // 4. Régi installer fájlok törlése
+        sendEvent('progress', $translations['install-cleanup'] ?? 'Cleaning up installer...', 60);
+        foreach (array_diff(scandir($parentDir), ['.', '..', 'temp', 'gym-one-latest']) as $file) {
+            $path = $parentDir . DIRECTORY_SEPARATOR . $file;
+            exec('rm -rf ' . escapeshellarg($path));
         }
 
-        echo '<script type="text/javascript">
-        // Átirányítjuk a jelenlegi ablakot
-        window.location.href = "../index.php";
+        // 5. .env áthelyezése a temp/-ből
+        sendEvent('progress', $translations['install-moving-env'] ?? 'Moving configuration...', 75);
+        if (file_exists($tempDir . '/.env')) {
+            exec('cp ' . escapeshellarg($tempDir . '/.env') . ' ' . escapeshellarg($parentDir . '/.env'));
+        }
 
-        // Megnyitjuk az új oldalt egy új ablakban
-        window.open("https://gymoneglobal.com", "_blank");
-      </script>';
-        exit;
+        // 6. gym-one-latest tartalmát a gyökérbe mozgatjuk
+        sendEvent('progress', $translations['install-finalizing'] ?? 'Finalizing installation...', 90);
+        exec('mv ' . escapeshellarg($outputDir) . '/* ' . escapeshellarg($parentDir) . '/ 2>&1', $mvOut, $mvCode);
+        exec('mv ' . escapeshellarg($outputDir) . '/.[!.]* ' . escapeshellarg($parentDir) . '/ 2>/dev/null');
+        exec('rm -rf ' . escapeshellarg($outputDir));
+        exec('rm -rf ' . escapeshellarg($tempDir));
+
+        writeLog('LASTONE', '🎉 Installation complete! Files deployed successfully.');
+        sendEvent('done', $translations['install-success'] ?? 'Installation complete!', 100);
+
     } catch (Exception $e) {
-        echo "Hiba: " . $e->getMessage() . "\n";
+        writeLog('LASTONE', '❌ Installation failed: ' . $e->getMessage());
+        sendEvent('error', $e->getMessage(), 0);
     }
+    exit();
 }
 
-/**
- *
- * @param string $dir Törlendő mappa útvonala
- */
-function deleteDirectory($dir)
-{
-    $items = array_diff(scandir($dir), ['.', '..']);
-    foreach ($items as $item) {
-        $itemPath = $dir . DIRECTORY_SEPARATOR . $item;
-        if (is_dir($itemPath)) {
-            deleteDirectory($itemPath);
-        } else {
-            unlink($itemPath);
-        }
+// Rekurzív törlés segédfüggvény
+function deleteDir(string $dir): void {
+    if (!is_dir($dir)) return;
+    foreach (array_diff(scandir($dir), ['.', '..']) as $item) {
+        $path = $dir . DIRECTORY_SEPARATOR . $item;
+        is_dir($path) ? deleteDir($path) : unlink($path);
     }
     rmdir($dir);
 }
+
+ob_end_clean();
 ?>
+<?php include __DIR__ . '/../partials/header.php'; ?>
 
-<!DOCTYPE html>
-<html lang="GB">
+<div class="container justify-content-center">
+  <div class="row text-center justify-content-center">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="shortcut icon" href="https://gymoneglobal.com/assets/img/logo.png" type="image/x-icon">
-    <title>GYM One - <?php echo $translations["install"]; ?></title>
-</head>
+    <div class="col-md-8 mx-auto text-center mb-5">
+      <h1 class="mb-3 fw-semibold"><?php echo e($translations['installer'] ?? 'Install GYM One'); ?></h1>
+      <p class="lead mb-4 fs-4">
+        <?php echo e($translations['installerVersion'] ?? ''); ?> &ndash; <?php echo e(INSTALLER_VERSION); ?>
+      </p>
+    </div>
 
-<body>
-    <div class="mt-5"></div>
-    <div class="container justify-content-center">
-        <div class="row text-center justify-content-center">
-            <div class="col-md-8 mx-auto text-center mb-5">
-                <h1 class="mb-3 fw-semibold"><?php echo $translations["installer"]; ?></h1>
-                <p class="lead mb-4 fs-4"><?php echo $translations["installerVersion"]; ?> - <?php echo $installer_version; ?>
-                </p>
+    <div class="col-md-8 mx-auto text-center mb-5">
+      <div class="card">
+        <div class="card-body">
+
+          <p class="text-center mb-4"><?php echo e($translations['click-toinstall'] ?? ''); ?></p>
+
+          <button id="installBtn" class="btn btn-primary btn-lg w-100">
+            <?php echo e($translations['installbtnlastone'] ?? 'Install GYM One'); ?>
+          </button>
+
+          <div class="install-progress mt-4" id="progressArea" style="display:none;">
+            <div class="progress" style="height: 28px;">
+              <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                   id="progressBar" style="width: 0%;" role="progressbar"
+                   aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                0%
+              </div>
             </div>
-            <div class="col-md-8 mx-auto text-center mb-5">
-                <div class="card">
-                    <div class="card-body">
-                        <p class="text-center"><?php echo $translations["click-toinstall"];?></p>
+            <p id="statusMessage" class="text-center mt-3 fw-semibold"> – </p>
+          </div>
 
-                        <form method="POST">
-                            <button type="submit" name="install" class="btn btn-primary btn-lg w-100"><?php echo $translations["installbtnlastone"];?></button>
-                        </form>
-
-                        <div class="install-progress mt-3">
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0;" id="progress-bar"></div>
-                            </div>
-                            <p id="status-message" class="text-center mt-2"> - </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
+      </div>
     </div>
-    <div class="mt-5"></div>
-    <div class="footer-waves">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 8" fill="#252525">
-            <path opacity="0.7" d="M0 8 V8 C20 0, 40 0, 60 8 V8z"></path>
-            <path d="M0 8 V5 Q25 10 55 5 T100 4 V8z"></path>
-        </svg>
-    </div>
-    <div class="footer">
-        <div class="container">
-            <div class="row gy-4">
-                <div class="col-md-4 mb-1">
-                    <h2 class="mb-4">
-                        <img src="https://gymoneglobal.com/assets/img/text-color-logo.png" alt="GYM One Logo" height="105">
-                    </h2>
 
-                    <p><?php echo $translations["herotext"]; ?></p>
-                </div>
-                <div class="col-md-3 offset-md-1">
-                    <h2 class="text-light mb-4"></h2>
-                </div>
+  </div>
+</div>
 
-                <div class="col-md-2 offset-md-1">
-                    <h2 class="text-light mb-4"><?php echo $translations["links"]; ?></h2>
+<script>
+  document.getElementById('installBtn').addEventListener('click', function () {
+    const btn           = this;
+    const progressArea  = document.getElementById('progressArea');
+    const progressBar   = document.getElementById('progressBar');
+    const statusMessage = document.getElementById('statusMessage');
 
-                    <ul class="list-unstyled links">
-                        <li><a href="<?php echo $github_url; ?>" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-                        <li><a href="<?php echo $discord_url; ?>" target="_blank" rel="noopener noreferrer">Discord</a></li>
-                        <li><a href="https://gymoneglobal.com/support"><?php echo $translations["support-us"]; ?></a></li>
-                    </ul>
-                </div>
-            </div>
+    btn.disabled       = true;
+    btn.textContent    = '⏳ Installing...';
+    progressArea.style.display = 'block';
 
-            <div class="border-top border-secondary pt-3 mt-3">
-                <p class="small text-center mb-0">
-                    Copyright © <?php echo $copyrightyear; ?> GYM One - <?php echo $translations["copyright"]; ?>. &nbsp;<svg
-                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill"
-                        viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314">
-                        </path>
-                    </svg>
-                    - <a href="https://www.mayerbalint.hu/">Mayer Bálint</a>
-                </p>
-            </div>
-        </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
-        integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
-        crossorigin="anonymous"></script>
-</body>
+    function setProgress(pct, msg) {
+      progressBar.style.width  = pct + '%';
+      progressBar.textContent  = pct + '%';
+      progressBar.setAttribute('aria-valuenow', pct);
+      statusMessage.textContent = msg;
+    }
 
-</html>
+    // Server-Sent Events a valós idejű visszajelzéshez
+    // Az SSE-t fetch POST-tal indítjuk
+    fetch('', {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body   : 'install=1',
+    }).then(response => {
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      function read() {
+        reader.read().then(({ done, value }) => {
+          if (done) return;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop(); // utolsó esetleg csonka sor megőrzése
+
+          for (const line of lines) {
+            if (!line.startsWith('data:')) continue;
+            try {
+              const event = JSON.parse(line.slice(5).trim());
+              setProgress(event.progress, event.message);
+
+              if (event.type === 'done') {
+                progressBar.classList.remove('progress-bar-animated');
+                statusMessage.className = 'text-center mt-3 fw-semibold text-success';
+                // Átirányítás 2 mp után
+                setTimeout(() => { window.location.href = '../'; }, 2000);
+              } else if (event.type === 'error') {
+                progressBar.classList.remove('progress-bar-animated', 'bg-success');
+                progressBar.classList.add('bg-danger');
+                statusMessage.className = 'text-center mt-3 fw-semibold text-danger';
+                btn.disabled    = false;
+                btn.textContent = '🔄 Retry';
+              }
+            } catch (e) { /* JSON parse hiba, kihagyjuk */ }
+          }
+          read();
+        });
+      }
+      read();
+    }).catch(() => {
+      setProgress(0, '❌ Network error. Please try again.');
+      progressBar.classList.add('bg-danger');
+      btn.disabled    = false;
+      btn.textContent = '🔄 Retry';
+    });
+  });
+</script>
+
+<?php include __DIR__ . '/../partials/footer.php'; ?>

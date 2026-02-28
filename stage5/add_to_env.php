@@ -1,62 +1,82 @@
 <?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $businessName = $_POST["businessName"];
-    $langCode = $_POST["langCode"];
-    $country = $_POST["country"];
-    $city = $_POST["city"];
-    $street = $_POST["street"];
-    $houseNumber = $_POST["houseNumber"];
-    $phoneno = $_POST["phoneno"];
-    $currency = $_POST["currency"];
-    $metakey = $_POST["metakey"];
-    $description = $_POST["description"];
-    $version = "V1.2.0";
-    $googlekey = "-";
-    $capacity = $_POST["capacity"];
-    $autoaccept = FALSE;
 
+session_start();
 
-    if (!empty($businessName) && !empty($langCode) && !empty($country) && !empty($city) && !empty($street) && !empty($houseNumber)) {
-        $envFile = fopen("../temp/.env", "a");
+require_once __DIR__ . '/../helpers.php';
 
-        if ($envFile) {
-            fwrite($envFile, "\n");
-            fwrite($envFile, "BUSINESS_NAME=$businessName\n");
-            fwrite($envFile, "LANG_CODE=$langCode\n");
-            fwrite($envFile, "COUNTRY=$country\n");
-            fwrite($envFile, "CITY=$city\n");
-            fwrite($envFile, "STREET=$street\n");
-            fwrite($envFile, "HOUSE_NUMBER=$houseNumber\n");
-            fwrite($envFile, "PHONE_NO=$phoneno\n");
-            fwrite($envFile, "CURRENCY=$currency\n");
-            fwrite($envFile, "META_KEY=$metakey\n");
-            fwrite($envFile, "DESCRIPTION=$description\n");
-            fwrite($envFile, "APP_VERSION=$version\n");
-            fwrite($envFile, "GOOGLE_KEY=$googlekey\n");
-            fwrite($envFile, "CAPACITY=$capacity\n");
-            fwrite($envFile, "ABOUT=Example text\n");
-            fwrite($envFile, "AUTOACCEPT=$autoaccept\n");
-
-            
-
-            fclose($envFile);
-
-            $logMessage = "[" . date("Y-m-d H:i:s") . "] [STAGE5] ✅ ENV file update successful! Gym name set: $businessName, Language: $langCode, Country: $country, City: $city, Street: $street, House Number: $houseNumber\n";
-            file_put_contents("../LOG.log", $logMessage, FILE_APPEND);
-
-            header("Location: ../stage6");
-            exit();
-        } else {
-            $logMessage = "[" . date("Y-m-d H:i:s") . "] [STAGE5] ❌ Failed to open .env file for writing!\n";
-            file_put_contents("../LOG.log", $logMessage, FILE_APPEND);
-
-            echo "Nem sikerült megnyitni az .env fájlt!";
-        }
-    } else {
-        $logMessage = "[" . date("Y-m-d H:i:s") . "] [STAGE5] ❌ Missing data! Gym name or other required fields are empty.\n";
-        file_put_contents("../LOG.log", $logMessage, FILE_APPEND);
-
-        echo "Missing data! Gym name or other required fields are empty.";
-    }
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: index.php');
+    exit();
 }
-?>
+
+
+function sanitizeEnvValue(string $value): string
+{
+    return trim($value);
+}
+
+function getPost(string $key, int $maxLen = 255): string
+{
+    return mb_substr(trim($_POST[$key] ?? ''), 0, $maxLen);
+}
+
+$businessName = getPost('businessName', 100);
+$langCode     = preg_replace('/[^a-zA-Z]/', '', getPost('langCode', 5));
+$country      = getPost('country', 100);
+$city         = getPost('city', 100);
+$street       = getPost('street', 100);
+$houseNumber  = getPost('houseNumber', 20);
+$phoneno      = getPost('phoneno', 30);
+$currency     = preg_replace('/[^A-Za-z]/', '', getPost('currency', 10));
+$metakey      = getPost('metakey', 255);
+$description  = getPost('description', 500);
+$capacity     = max(10, min(99999, (int)($_POST['capacity'] ?? 10)));
+
+if (empty($businessName) || empty($langCode) || empty($country) ||
+    empty($city) || empty($street) || empty($houseNumber)) {
+    writeLog('STAGE5', '❌ Missing required fields.');
+    header('Location: index.php?error=missing_fields');
+    exit();
+}
+
+$appVersion = INSTALLER_VERSION;
+$googleKey  = '-';
+$autoaccept = 'false';
+$about      = 'Example text';
+
+$envFile = TEMP_DIR . '.env';
+
+$lines = [
+    '',
+    'BUSINESS_NAME=' . sanitizeEnvValue($businessName),
+    'LANG_CODE='     . sanitizeEnvValue($langCode),
+    'COUNTRY='       . sanitizeEnvValue($country),
+    'CITY='          . sanitizeEnvValue($city),
+    'STREET='        . sanitizeEnvValue($street),
+    'HOUSE_NUMBER='  . sanitizeEnvValue($houseNumber),
+    'PHONE_NO='      . sanitizeEnvValue($phoneno),
+    'CURRENCY='      . sanitizeEnvValue($currency),
+    'META_KEY='      . sanitizeEnvValue($metakey),
+    'DESCRIPTION='   . sanitizeEnvValue($description),
+    'APP_VERSION='   . sanitizeEnvValue($appVersion),
+    'GOOGLE_KEY='    . sanitizeEnvValue($googleKey),
+    'CAPACITY='      . (int)$capacity,
+    'ABOUT='         . sanitizeEnvValue($about),
+    'AUTOACCEPT='    . $autoaccept,
+];
+
+$result = file_put_contents($envFile, implode("\n", $lines) . "\n", FILE_APPEND | LOCK_EX);
+
+if ($result === false) {
+    writeLog('STAGE5', '❌ Failed to write .env file.');
+    header('Location: index.php?error=env_write');
+    exit();
+}
+
+writeLog('STAGE5', sprintf(
+    '✅ ENV updated – Gym: %s | Lang: %s | Location: %s, %s, %s %s',
+    $businessName, $langCode, $country, $city, $street, $houseNumber
+));
+
+header('Location: ../stage6/');
+exit();

@@ -1,82 +1,113 @@
 <?php
-function check_database_connection($host, $username, $password, $database)
-{
-    $conn = new mysqli($host, $username, $password, $database);
-    if ($conn->connect_error) {
-        return false;
-    } else {
-        return $conn;
-    }
+// ============================================================
+//  GYM One Installer – Stage 7: Admin regisztráció feldolgozás
+// ============================================================
+ini_set("display_errors", 1);
+ini_set("display_startup_errors", 1);
+error_reporting(E_ALL);
+session_start();
+
+require_once __DIR__ . '/../helpers.php';
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: index.php');
+    exit();
 }
 
-$env_file = file_get_contents('../temp/.env');
-$env_lines = explode("\n", $env_file);
+// ------------------------------------------------------------
+// Input validáció
+// ------------------------------------------------------------
+$username         = mb_substr(trim($_POST['username']  ?? ''), 0, 50);
+$firstname        = mb_substr(trim($_POST['firstname'] ?? ''), 0, 50);
+$lastname         = mb_substr(trim($_POST['lastname']  ?? ''), 0, 50);
+$password         = $_POST['password']         ?? '';
+$confirmPassword  = $_POST['confirm_password'] ?? '';
 
-$db_host = '';
-$db_username = '';
-$db_password = '';
-$db_name = '';
+if (empty($username) || empty($firstname) || empty($lastname) || empty($password)) {
+    header('Location: index.php?error=missing_fields');
+    exit();
+}
 
-foreach ($env_lines as $line) {
-    $line_parts = explode('=', $line);
-    if (count($line_parts) == 2) {
-        $key = trim($line_parts[0]);
-        $value = trim($line_parts[1]);
-        if ($key === 'DB_SERVER') {
-            $db_host = $value;
-        } elseif ($key === 'DB_USERNAME') {
-            $db_username = $value;
-        } elseif ($key === 'DB_PASSWORD') {
-            $db_password = $value;
-        } elseif ($key === 'DB_NAME') {
-            $db_name = $value;
+// Jelszó egyezés – szerver oldali ellenőrzés is!
+if ($password !== $confirmPassword) {
+    header('Location: index.php?error=password_mismatch');
+    exit();
+}
+
+// Jelszó erősség szerver oldalon is ellenőrizve
+if (
+    strlen($password) < 8 ||
+    !preg_match('/[A-Z]/', $password) ||
+    !preg_match('/[0-9]/', $password) ||
+    !preg_match('/[!@#$%^&*.,?]/', $password)
+) {
+    header('Location: index.php?error=missing_fields');
+    exit();
+}
+
+// ------------------------------------------------------------
+// .env biztonságos beolvasása
+// ------------------------------------------------------------
+$dbHost = $dbUser = $dbPass = $dbName = '';
+$envFile = TEMP_DIR . '.env';
+
+if (file_exists($envFile)) {
+    foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        [$key, $value] = array_pad(explode('=', $line, 2), 2, '');
+        $value = trim($value);
+        switch (trim($key)) {
+            case 'DB_SERVER':   $dbHost = $value; break;
+            case 'DB_USERNAME': $dbUser = $value; break;
+            case 'DB_PASSWORD': $dbPass = $value; break;
+            case 'DB_NAME':     $dbName = $value; break;
         }
     }
 }
 
-$conn = check_database_connection($db_host, $db_username, $db_password, $db_name);
-
-if (!$conn) {
-    die("Database connection failed");
+// ------------------------------------------------------------
+// DB kapcsolat
+// ------------------------------------------------------------
+$conn = @new mysqli($dbHost, $dbUser, $dbPass, $dbName);
+if ($conn->connect_error) {
+    writeLog('STAGE7', '❌ DB connection failed: ' . $conn->connect_error);
+    header('Location: index.php?error=db_error');
+    exit();
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = trim($_POST['username']);
-    $firstname = trim($_POST['firstname']);
-    $lastname = trim($_POST['lastname']);
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
-    $is_boss = 1;
-    $userid = 9999999999;
+// ------------------------------------------------------------
+// Admin fiók létrehozása
+// userid: AUTO_INCREMENT az adatbázisban, nem adjuk meg manuálisan!
+// is_boss = 1 → admin jogkör
+// ------------------------------------------------------------
+$passwordHash = password_hash($password, PASSWORD_BCRYPT);
 
-    if ($password != $confirm_password) {
-        die("Password and confirm password do not match");
-    }
+// userid lekérése – ha a tábla nem AUTO_INCREMENT, generáljuk manuálisan
+$result = $conn->query('SELECT COALESCE(MAX(userid), 0) + 1 AS next_id FROM workers');
+$userId = $result ? (int)$result->fetch_assoc()['next_id'] : 1;
 
-    $password_hash = password_hash($password, PASSWORD_DEFAULT);
+$stmt = $conn->prepare(
+    'INSERT INTO workers (userid, firstname, lastname, username, password_hash, is_boss)
+     VALUES (?, ?, ?, ?, ?, 1)'
+);
 
+if (!$stmt) {
+    writeLog('STAGE7', '❌ Prepare failed: ' . $conn->error);
+    header('Location: index.php?error=db_error');
+    exit();
+}
 
-    $sql = "INSERT INTO workers (userid, firstname, lastname, username, password_hash, is_boss) VALUES (?, ?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
+$stmt->bind_param('issss', $userId, $firstname, $lastname, $username, $passwordHash);
 
-    if ($stmt === false) {
-        die("Error preparing statement: " . $conn->error);
-    }
-
-    $stmt->bind_param("sssssi", $userid, $firstname, $lastname, $username, $password_hash, $is_boss);
-
-    if ($stmt->execute()) {
-        header("Location: ../stage8");
-        $logMessage = "[" . date("Y-m-d H:i:s") . "] [STAGE7] ✅ Boss account added: $username ($firstname $lastname) \n";
-        file_put_contents("../LOG.log", $logMessage, FILE_APPEND);
-        exit();
-    } else {
-        echo "Error: " . $conn->error;
-        $logMessage = "[" . date("Y-m-d H:i:s") . "] [STAGE7] ❌ ERROR DURING ADDING: $username ($firstname $lastname) \n";
-        file_put_contents("../LOG.log", $logMessage, FILE_APPEND);
-    }
-
+if ($stmt->execute()) {
+    writeLog('STAGE7', "✅ Boss account created: {$username} ({$firstname} {$lastname})");
     $stmt->close();
     $conn->close();
+    header('Location: ../stage8/');
+    exit();
+} else {
+    writeLog('STAGE7', "❌ Insert failed for: {$username} – " . $stmt->error);
+    $stmt->close();
+    $conn->close();
+    header('Location: index.php?error=db_error');
+    exit();
 }
-?>
