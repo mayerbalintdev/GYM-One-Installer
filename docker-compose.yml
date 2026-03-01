@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  gymone-web:
+    build: .
+    container_name: gymone-app
+    ports:
+      - "${WEB_PORT:-8090}:80"
+    volumes:
+      # For development - mount current directory
+      - ./:/var/www/html
+      # Named volumes for persistent data
+      - gymone-data:/var/www/html/data
+      - gymone-uploads:/var/www/html/uploads
+      - gymone-cache:/var/www/html/cache
+    environment:
+      - APACHE_RUN_USER=www-data
+      - APACHE_RUN_GROUP=www-data
+      - DEBIAN_FRONTEND=noninteractive
+    networks:
+      - gymone-network
+    depends_on:
+      - gymone-mysql
+    restart: unless-stopped
+
+  gymone-mysql:
+    image: mysql:8.0-debian
+    container_name: gymone-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-gymone_root_password}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-gymone_db}
+      MYSQL_USER: ${MYSQL_USER:-gymone_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-gymone_password}
+    ports:
+      - "${MYSQL_PORT:-3316}:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - gymone-network
+    command: --default-authentication-plugin=mysql_native_password
+
+  gymone-phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: gymone-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: gymone-mysql
+      PMA_USER: root
+      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD:-gymone_root_password}
+      UPLOAD_LIMIT: 50M
+    ports:
+      - "${PHPMYADMIN_PORT:-8091}:80"
+    networks:
+      - gymone-network
+    depends_on:
+      - gymone-mysql
+
+volumes:
+  mysql-data:
+    driver: local
+  gymone-data:
+    driver: local
+  gymone-uploads:
+    driver: local
+  gymone-cache:
+    driver: local
+
+networks:
+  gymone-network:
+    driver: bridge
