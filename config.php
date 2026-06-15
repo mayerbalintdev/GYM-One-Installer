@@ -1,6 +1,6 @@
 <?php
 
-define('INSTALLER_VERSION', 'V1.4.0');
+define('INSTALLER_VERSION', 'V1.4.1');
 define('GITHUB_URL',  'https://github.com/mayerbalintdev/GYM-One');
 define('DISCORD_URL', 'https://gymoneglobal.com/discord');
 define('SUPPORT_URL', 'https://gymoneglobal.com/support');
